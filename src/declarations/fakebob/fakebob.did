@@ -215,6 +215,7 @@ type Token =
    icrc4_maximum_update_batch_size: () -> (opt nat) query;
    icrc4_transfer_batch: (TransferBatchArgs) -> (TransferBatchResults);
    init: () -> ();
+   mint_tokens: () -> (Result);
    stats: () -> (Stats) query;
  };
 type Tip = 
@@ -236,6 +237,14 @@ type Stats =
  record {
    holders: nat;
    totalSupply: nat;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: record {
+         nat;
+         nat;
+       };
  };
 type Mint = 
  record {

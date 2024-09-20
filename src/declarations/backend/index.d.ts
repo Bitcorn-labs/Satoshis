@@ -8,7 +8,6 @@ import type { Principal } from "@dfinity/principal";
 import type { IDL } from "@dfinity/candid";
 
 import { _SERVICE } from './backend.did';
-export { _SERVICE } from './backend.did';
 
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const canisterId: string;
