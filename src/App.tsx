@@ -248,7 +248,7 @@ function App() {
 
     
     const amountToMint = prompt("Enter the amount of Bob to use to hash reBob:");
-    const amountInE8s = BigInt(Number(amountToMint) * 100000000);
+    const amountInE8s = BigInt(Number(amountToMint) * 1_0000_0000); // Bob decimals = 8
 
     if (amountInE8s + (bobFee * 2n) > bobLedgerBalance) {
       alert("You do not have enough Bob.");
@@ -261,7 +261,9 @@ function App() {
     try {
       // Assuming icpActor and icdvActor are already initialized actors
       const approvalResult  = await bobLedgerActor.icrc2_approve({
+
         amount: amountInE8s + bobFee, // Approve amount and the fee to send bob back during icrc2_transfer_from() in deposit() function
+
         // Adjust with your canister ID and parameters
         spender: {
           owner: await Principal.fromText(reBobCanisterID),
@@ -275,8 +277,10 @@ function App() {
         from_subaccount: [],
       });
 
+      console.log({approvalResult}); // I want to see the output of this.
+
       if ("Ok" in approvalResult) {
-        alert("This may take a long time! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
+        alert("This may take a long time! Your BOB has been authorized for hashing. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
         let result = await reBobActor.deposit([], amountInE8s );
         if("ok" in result){
           alert("Mint successful! Block: " + result.ok.toString() + ".");
@@ -307,7 +311,7 @@ function App() {
 
     
     const amountToMint = prompt("Enter the amount of reBob to use to withdraw Bob:");
-    const amountInE8s = BigInt(Number(amountToMint) * 1000000);
+    const amountInE8s = BigInt(Number(amountToMint) * 1_000_000); // reBob decimals = 6
 
     if (amountInE8s + bobFee + reBobFee > reBobLedgerBalance) { // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
       alert("You do not have enough reBob.");
@@ -320,7 +324,9 @@ function App() {
     try {
       // Assuming icpActor and icdvActor are already initialized actors
       const approvalResult  = await reBobActor.icrc2_approve({
+
         amount: amountInE8s + bobFee, // Cover the fee of sending the bob back to the user.
+
         // Adjust with your canister ID and parameters
         spender: {
           owner: await Principal.fromText(reBobCanisterID),
@@ -334,9 +340,12 @@ function App() {
         from_subaccount: [],
       });
 
+      console.log({approvalResult})
+
       if ("Ok" in approvalResult) {
-        alert("This may take a while! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
+        alert("This may take a while! Your Bob has been authorized for withdrawl. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
         let result = await reBobActor.withdraw([], amountInE8s + bobFee );
+
         if("ok" in result){
           alert("Withdraw successful! Block: " + result.ok.toString() + ".");
         } else {
@@ -401,7 +410,7 @@ function App() {
             <h3>Your current $reBob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}</h3>
             <h3>Your current $Bob Balance: {bigintToFloatString(bobLedgerBalance)}</h3>
             <div className="card">
-            {bobLedgerBalance < 40000 ? (
+            {bobLedgerBalance < 40000 ? ( 
               <div>
                 <p>You need more BOB to hash reBob. Send At least .0004 BOB to your principal. Your principal is {yourPrincipal}</p>
               </div>
