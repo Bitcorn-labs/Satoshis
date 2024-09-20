@@ -38,7 +38,7 @@ shared ({ caller = _owner }) actor class Token  (args: ?{
   let Map = ICRC1.Map;
 
   let ICPLedger : ICPTypes.Service = actor("ryjl3-tyaaa-aaaaa-aaaba-cai");
-  let BOBLedger : ICPTypes.Service = actor("7pail-xaaaa-aaaas-aabmq-cai");
+  let BOBLedger : ICPTypes.Service = actor("7pail-xaaaa-aaaas-aabmq-cai");//bd3sg-teaaa-aaaaa-qaaba-cai"); // Use 7pail-xaaaa-aaaas-aabmq-cai for ic0
 
   type  Account = ICRC1.Account;
 
@@ -444,7 +444,7 @@ shared ({ caller = _owner }) actor class Token  (args: ?{
   public shared ({ caller }) func deposit(subaccount: ?[Nat8], amount: Nat) : async Result.Result<(Nat, Nat), Text> {
     log.add(debug_show(Time.now()) # "trying deposit " # debug_show(subaccount));
 
-    if(amount < 10_000){
+    if(amount < 10_000){ // if they want to pay 1_000_000 * 2 transfer fee for 10_000 that's on them.
       return #err("amount too low");
     };
 
@@ -519,7 +519,7 @@ shared ({ caller = _owner }) actor class Token  (args: ?{
   public shared ({ caller }) func withdraw(subaccount: ?[Nat8], amount: Nat) : async Result.Result<(Nat,Nat), Text> {
     log.add(debug_show(Time.now()) # "trying withdraw " # debug_show(subaccount));
 
-    if(amount < 10_000){
+    if(amount <= 1_000_000){ // Accounting for sending bob to the user from this canister. We pay the fee.
       return #err("amount too low");
     };
 
@@ -550,7 +550,7 @@ shared ({ caller = _owner }) actor class Token  (args: ?{
         from_subaccount = null;
         memo = ?Blob.toArray("\d8\d9\b4\5f\41\5d\5a\c3\be\e5\21\2c\10\f4\bb\6d\07\52\7d\01\17\7e\58\e0\13\03\39\90\00\c5\a8\94"); //reBob Withdraw
         created_at_time = ?time64();
-        amount = amount - 10_000;
+        amount = amount - 1_000_000; // keep this amount as part of the transfer fee to keep our bob from being drained.
       });
     } catch(e){
       //put back

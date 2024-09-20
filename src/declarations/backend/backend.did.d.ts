@@ -186,7 +186,6 @@ export interface Tip {
   'last_block_hash' : Uint8Array | number[],
 }
 export interface Token {
-  'admin_init' : ActorMethod<[], undefined>,
   'admin_update_icrc1' : ActorMethod<
     [Array<UpdateLedgerInfoRequest__2>],
     Array<boolean>

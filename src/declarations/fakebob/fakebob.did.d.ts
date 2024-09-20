@@ -172,6 +172,8 @@ export interface Mint {
   'created_at_time' : [] | [Timestamp],
   'amount' : Balance,
 }
+export type Result = { 'ok' : [bigint, bigint] } |
+  { 'err' : string };
 export interface Stats { 'totalSupply' : bigint, 'holders' : bigint }
 export type Subaccount = Uint8Array | number[];
 export type Subaccount__1 = Uint8Array | number[];
@@ -236,6 +238,7 @@ export interface Token {
     TransferBatchResults
   >,
   'init' : ActorMethod<[], undefined>,
+  'mint_tokens' : ActorMethod<[], Result>,
   'stats' : ActorMethod<[], Stats>,
 }
 export interface Transaction {

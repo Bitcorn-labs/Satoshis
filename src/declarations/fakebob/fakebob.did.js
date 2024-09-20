@@ -350,6 +350,10 @@ export const idlFactory = ({ IDL }) => {
     'Err' : TransferBatchError,
   });
   const TransferBatchResults = IDL.Vec(IDL.Opt(TransferBatchResult));
+  const Result = IDL.Variant({
+    'ok' : IDL.Tuple(IDL.Nat, IDL.Nat),
+    'err' : IDL.Text,
+  });
   const Stats = IDL.Record({ 'totalSupply' : IDL.Nat, 'holders' : IDL.Nat });
   const Token = IDL.Service({
     'admin_init' : IDL.Func([], [], []),
@@ -451,6 +455,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'init' : IDL.Func([], [], []),
+    'mint_tokens' : IDL.Func([], [Result], []),
     'stats' : IDL.Func([], [Stats], ['query']),
   });
   return Token;

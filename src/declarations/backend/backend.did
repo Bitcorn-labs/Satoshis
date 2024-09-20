@@ -176,7 +176,6 @@ type Transaction =
  };
 type Token = 
  service {
-   admin_init: () -> ();
    admin_update_icrc1: (vec UpdateLedgerInfoRequest__2) -> (vec bool);
    admin_update_icrc2: (vec UpdateLedgerInfoRequest__1) -> (vec bool);
    admin_update_icrc4: (vec UpdateLedgerInfoRequest) -> (vec bool);

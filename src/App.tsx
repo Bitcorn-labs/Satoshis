@@ -4,19 +4,19 @@ import motokoLogo from './assets/motoko_moving.png';
 import motokoShadowLogo from './assets/motoko_shadow.png';
 import reactLogo from './assets/bob.png';
 import viteLogo from './assets/corn.png';
-import { useQueryCall, useUpdateCall } from '@ic-reactor/react';
+// import { useQueryCall, useUpdateCall } from '@ic-reactor/react';
 import { Principal } from '@dfinity/principal';
-import {Agent, Actor, HttpAgent} from '@dfinity/agent';
+// import {Agent, Actor, HttpAgent} from '@dfinity/agent';
 
 import { idlFactory as icpFactory} from './declarations/nns-ledger';
 import { _SERVICE as icpService } from './declarations/nns-ledger/index.d';
 
 import { idlFactory as reBobFactory} from './declarations/backend';
-import { _SERVICE as reBobService} from './declarations/backend/index.d';
+import { _SERVICE as reBobService} from './declarations/service_hack/service'; // changed to service.d because dfx generate would remove the export line from index.d
 import {  Stats } from './declarations/backend/backend.did.d';
 
-const bobLedgerID = "7pail-xaaaa-aaaas-aabmq-cai";//"bd3sg-teaaa-aaaaa-qaaba-cai";
-const reBobCanisterID = "qvwlv-uyaaa-aaaas-aidpq-cai";//"bkyz2-fmaaa-aaaaa-qaaaq-cai";
+const bobLedgerID = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? "bd3sg-teaaa-aaaaa-qaaba-cai":"7pail-xaaaa-aaaas-aabmq-cai";
+const reBobCanisterID = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? "bkyz2-fmaaa-aaaaa-qaaaq-cai":"qvwlv-uyaaa-aaaas-aidpq-cai";
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -31,6 +31,9 @@ function App() {
   const [reBobActorTemp, setreBobActorTemp] = useState<reBobService |null>(null);
   const [bobLedgerActor, setBobLedgerActor] = useState<icpService | null>(null);
   const [yourPrincipal, setYourPrincipal] = useState<string>("null");
+
+  const bobFee : bigint = 1_000_000n;
+  const reBobFee : bigint = 10_000n;
 
   function bigintToFloatString(bigintValue : bigint, decimals = 8) {
     const stringValue = bigintValue.toString();
@@ -63,9 +66,14 @@ function App() {
     }
   };
 
+  const checkLoggedIn = async () => {
+    await setIsConnected(!!await window.ic.plug.isConnected());
+  }
+
   useEffect(() => {
     
     console.log("Component mounted, waiting for user to log in...");
+    checkLoggedIn();
     //console.log("first time", isConnected);
     //checkConnection();
   }, []); // Dependency array remains empty if you only want this effect to run once on component mount
@@ -178,28 +186,34 @@ function App() {
 
   const handleLogout = async () => {
     setLoading(true);
-    try {
-      await window.ic.plug.disconnect();
-      setIsConnected(false);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
-      setLoading(false);
+    //const connected = await window.ic.plug.isConnected();
+    
+    if(isConnected){
+      try {
+        await window.ic.plug.disconnect();
+        setIsConnected(false);
+      } catch (error) {
+        console.error('Logout failed:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleLogin = async () => {
+    handleLogout();
     setLoading(true);
       try {
 
         
         
         const connected = await window.ic.plug.isConnected();
+        console.log({connected})
         if (!connected) {
           let pubkey = await window.ic.plug.requestConnect({
             // whitelist, host, and onConnectionUpdate need to be defined or imported appropriately
             whitelist: [bobLedgerID, reBobCanisterID],
-            host: window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? 'http://127.0.0.1:8000' : 'https://ic0.app',
+            host: window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? 'http://127.0.0.1:4943' : 'https://ic0.app',
             onConnectionUpdate: async () => {
               console.log("Connection updated", await window.ic.plug.isConnected());
               await setIsConnected(!!await window.ic.plug.isConnected());
@@ -236,7 +250,10 @@ function App() {
     const amountToMint = prompt("Enter the amount of Bob to use to hash reBob:");
     const amountInE8s = BigInt(Number(amountToMint) * 100000000);
 
-    if (amountInE8s + 20000n > bobLedgerBalance) {
+    console.log(["deposit user entered", amountInE8s]);
+
+
+    if (amountInE8s + (bobFee * 2n) > bobLedgerBalance) {
       alert("You do not have enough Bob.");
       return;
     }
@@ -247,14 +264,14 @@ function App() {
     try {
       // Assuming icpActor and icdvActor are already initialized actors
       const approvalResult  = await bobLedgerActor.icrc2_approve({
-        amount: amountInE8s + 10000n,
+        amount: amountInE8s + bobFee, // Approve amount and the fee to send bob back during icrc2_transfer_from() in deposit() function
         // Adjust with your canister ID and parameters
         spender: {
           owner: await Principal.fromText(reBobCanisterID),
           subaccount: [],
         },
         memo: [],
-        fee: [1000000n],
+        fee: [bobFee],
         created_at_time: [BigInt(Date.now()) * 1000000n],
         expires_at: [],
         expected_allowance: [],
@@ -295,7 +312,9 @@ function App() {
     const amountToMint = prompt("Enter the amount of reBob to use to withdraw Bob:");
     const amountInE8s = BigInt(Number(amountToMint) * 1000000);
 
-    if (amountInE8s + 20000n > reBobLedgerBalance) {
+    console.log(["withdraw user entered", amountInE8s]);
+
+    if (amountInE8s + bobFee + reBobFee > reBobLedgerBalance) { // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
       alert("You do not have enough reBob.");
       return;
     }
@@ -306,14 +325,14 @@ function App() {
     try {
       // Assuming icpActor and icdvActor are already initialized actors
       const approvalResult  = await reBobActor.icrc2_approve({
-        amount: amountInE8s + 10000n,
+        amount: amountInE8s + bobFee, // Cover the fee of sending the bob back to the user.
         // Adjust with your canister ID and parameters
         spender: {
           owner: await Principal.fromText(reBobCanisterID),
           subaccount: [],
         },
         memo: [],
-        fee: [10000n],
+        fee: [reBobFee],
         created_at_time: [BigInt(Date.now()) * 1000000n],
         expires_at: [],
         expected_allowance: [],
@@ -322,10 +341,10 @@ function App() {
 
       if ("Ok" in approvalResult) {
         alert("This may take a while! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
-        let result = await reBobActor.withdraw([], amountInE8s - 10000n );
+        let result = await reBobActor.withdraw([], amountInE8s + bobFee );
         if("ok" in result){
           alert("Withdraw successful! Block: " + result.ok.toString() + ".");
-        } else {  
+        } else {
           console.log("fund failed", result);
           alert("Withdraw failed! " + result.err.toString());
         };
@@ -333,7 +352,7 @@ function App() {
         fetchStats();
       } else {
         console.log("Approval failed", approvalResult); 
-        alert("Withdraw failed." + + approvalResult.Err.toString());
+        alert("Withdraw failed." + approvalResult.Err.toString());
       }
     } catch (error) {
       console.error('Minting failed:', error);
@@ -384,7 +403,7 @@ function App() {
         ) : (
           <>
             <button onClick={handleLogout} disabled={loading}>Logout</button>
-            <h3>Your current $rebob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}</h3>
+            <h3>Your current $reBob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}</h3>
             <h3>Your current $Bob Balance: {bigintToFloatString(bobLedgerBalance)}</h3>
             <div className="card">
             {bobLedgerBalance < 40000 ? (

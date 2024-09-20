@@ -356,7 +356,6 @@ export const idlFactory = ({ IDL }) => {
   const TransferBatchResults = IDL.Vec(IDL.Opt(TransferBatchResult));
   const Stats = IDL.Record({ 'totalSupply' : IDL.Nat, 'holders' : IDL.Nat });
   const Token = IDL.Service({
-    'admin_init' : IDL.Func([], [], []),
     'admin_update_icrc1' : IDL.Func(
         [IDL.Vec(UpdateLedgerInfoRequest__2)],
         [IDL.Vec(IDL.Bool)],
