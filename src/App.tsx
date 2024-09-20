@@ -208,7 +208,7 @@ function App() {
         
         
         const connected = await window.ic.plug.isConnected();
-        console.log({connected})
+        // console.log({connected})
         if (!connected) {
           let pubkey = await window.ic.plug.requestConnect({
             // whitelist, host, and onConnectionUpdate need to be defined or imported appropriately
@@ -249,9 +249,6 @@ function App() {
     
     const amountToMint = prompt("Enter the amount of Bob to use to hash reBob:");
     const amountInE8s = BigInt(Number(amountToMint) * 100000000);
-
-    console.log(["deposit user entered", amountInE8s]);
-
 
     if (amountInE8s + (bobFee * 2n) > bobLedgerBalance) {
       alert("You do not have enough Bob.");
@@ -311,8 +308,6 @@ function App() {
     
     const amountToMint = prompt("Enter the amount of reBob to use to withdraw Bob:");
     const amountInE8s = BigInt(Number(amountToMint) * 1000000);
-
-    console.log(["withdraw user entered", amountInE8s]);
 
     if (amountInE8s + bobFee + reBobFee > reBobLedgerBalance) { // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
       alert("You do not have enough reBob.");
