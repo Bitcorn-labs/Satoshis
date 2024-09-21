@@ -5,8 +5,6 @@ import './index.scss';
 import { ActorProvider, AgentProvider } from '@ic-reactor/react';
 import { idlFactory, canisterId } from './declarations/backend';
 
-
-
 import { Principal } from '@dfinity/principal';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -16,5 +14,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <App />
       </ActorProvider>
     </AgentProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

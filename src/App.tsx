@@ -8,15 +8,24 @@ import viteLogo from './assets/corn.png';
 import { Principal } from '@dfinity/principal';
 // import {Agent, Actor, HttpAgent} from '@dfinity/agent';
 
-import { idlFactory as icpFactory} from './declarations/nns-ledger';
+import { idlFactory as icpFactory } from './declarations/nns-ledger';
 import { _SERVICE as icpService } from './declarations/nns-ledger/index.d';
 
-import { idlFactory as reBobFactory} from './declarations/backend';
-import { _SERVICE as reBobService} from './declarations/service_hack/service'; // changed to service.d because dfx generate would remove the export line from index.d
-import {  Stats } from './declarations/backend/backend.did.d';
+import { idlFactory as reBobFactory } from './declarations/backend';
+import { _SERVICE as reBobService } from './declarations/service_hack/service'; // changed to service.d because dfx generate would remove the export line from index.d
+import { Stats } from './declarations/backend/backend.did.d';
+import { TextField } from '@mui/material';
 
-const bobLedgerID = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? "bd3sg-teaaa-aaaaa-qaaba-cai":"7pail-xaaaa-aaaas-aabmq-cai";
-const reBobCanisterID = window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? "bkyz2-fmaaa-aaaaa-qaaaq-cai":"qvwlv-uyaaa-aaaas-aidpq-cai";
+const bobLedgerID =
+  window.location.href.includes('localhost') ||
+  window.location.href.includes('127.0.0.1')
+    ? 'bd3sg-teaaa-aaaaa-qaaba-cai'
+    : '7pail-xaaaa-aaaas-aabmq-cai';
+const reBobCanisterID =
+  window.location.href.includes('localhost') ||
+  window.location.href.includes('127.0.0.1')
+    ? 'bkyz2-fmaaa-aaaaa-qaaaq-cai'
+    : 'qvwlv-uyaaa-aaaas-aidpq-cai';
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -27,15 +36,18 @@ function App() {
   const [share, setShare] = useState<bigint>(0n);
   const [stats, setStats] = useState<Stats | null>(null);
 
-  const [reBobActor, setreBobActor] = useState<reBobService |null>(null);
-  const [reBobActorTemp, setreBobActorTemp] = useState<reBobService |null>(null);
+  const [reBobActor, setreBobActor] = useState<reBobService | null>(null);
+  const [reBobActorTemp, setreBobActorTemp] = useState<reBobService | null>(
+    null
+  );
   const [bobLedgerActor, setBobLedgerActor] = useState<icpService | null>(null);
-  const [yourPrincipal, setYourPrincipal] = useState<string>("null");
+  const [yourPrincipal, setYourPrincipal] = useState<string>('null');
+  const [bobFieldValue, setBobFieldValue] = useState<Number>(0.0);
 
-  const bobFee : bigint = 1_000_000n;
-  const reBobFee : bigint = 10_000n;
+  const bobFee: bigint = 1_000_000n;
+  const reBobFee: bigint = 10_000n;
 
-  function bigintToFloatString(bigintValue : bigint, decimals = 8) {
+  function bigintToFloatString(bigintValue: bigint, decimals = 8) {
     const stringValue = bigintValue.toString();
     // Ensure the string is long enough by padding with leading zeros if necessary
     const paddedStringValue = stringValue.padStart(decimals + 1, '0');
@@ -46,33 +58,13 @@ function App() {
     const result = `${beforeDecimal}.${afterDecimal}`.replace(/\.?0+$/, '');
     return result;
   }
-  
-
-
-  const checkConnection = async () => {
-    try {
-      // Assuming window.ic?.plug?.isConnected() is a Promise-based method
-      
-      const connected = await window.ic.plug.isConnected();
-      if(connected){
-        await handleLogin();
-      } else {
-        
-      }
-      
-    } catch (error) {
-      console.error("Error checking connection status:", error);
-      // Handle any errors, for example, by setting an error state
-    }
-  };
 
   const checkLoggedIn = async () => {
-    await setIsConnected(!!await window.ic.plug.isConnected());
-  }
+    await setIsConnected(!!(await window.ic.plug.isConnected()));
+  };
 
   useEffect(() => {
-    
-    console.log("Component mounted, waiting for user to log in...");
+    console.log('Component mounted, waiting for user to log in...');
     checkLoggedIn();
     //console.log("first time", isConnected);
     //checkConnection();
@@ -80,8 +72,8 @@ function App() {
 
   useEffect(() => {
     // This code runs after `icpActor` and `icdvActor` have been updated.
-    console.log("actors updated", bobLedgerActor, reBobActor);
-  
+    console.log('actors updated', bobLedgerActor, reBobActor);
+
     fetchBalances();
     //fetchMinters();
     // Note: If `fetchBalances` depends on `icpActor` or `icdvActor`, you should ensure it's capable of handling null values or wait until these values are not null.
@@ -90,7 +82,7 @@ function App() {
   useEffect(() => {
     // This code runs after `icpActor` and `icdvActor` have been updated.
     //console.log("actors updated", icpActor, bobActor, bobLedgerActor, reBobActor);
-  
+
     fetchStats();
     //fetchMinters();
     // Note: If `fetchBalances` depends on `icpActor` or `icdvActor`, you should ensure it's capable of handling null values or wait until these values are not null.
@@ -99,66 +91,58 @@ function App() {
   useEffect(() => {
     // This code runs after `icpActor` and `icdvActor` have been updated.
     if (isConnected) {
-      
       fetchPrincipal();
       // Ensure fetchBalances is defined and correctly handles asynchronous operations
       setUpActors();
-    };
+    }
 
-    console.log("isConnected", isConnected);
+    console.log('isConnected', isConnected);
 
     // Note: If `fetchBalances` depends on `icpActor` or `icdvActor`, you should ensure it's capable of handling null values or wait until these values are not null.
   }, [isConnected]);
 
   const fetchPrincipal = async () => {
-    if(!(await window.ic.plug.agent)) return;
+    if (!(await window.ic.plug.agent)) return;
     setYourPrincipal((await window.ic.plug.agent.getPrincipal()).toString());
   };
 
   const fetchStats = async () => {
-    
-
-    if(reBobActorTemp != null){
+    if (reBobActorTemp != null) {
       let stats = await reBobActorTemp.stats();
       await setStats(stats);
-    };
+    }
   };
 
-
-
   const setUpActors = async () => {
-
-    console.log("Setting up actors...", bobLedgerID, reBobCanisterID);
-
-  
+    console.log('Setting up actors...', bobLedgerID, reBobCanisterID);
 
     const getreBobActor = await window.ic.plug.createActor({
       canisterId: reBobCanisterID,
       interfaceFactory: reBobFactory,
-    })
+    });
 
     await setreBobActor(getreBobActor);
 
+    await setBobLedgerActor(
+      await window.ic.plug.createActor({
+        canisterId: bobLedgerID,
+        interfaceFactory: icpFactory,
+      })
+    );
 
-
-    await setBobLedgerActor(await window.ic.plug.createActor({
-      canisterId: bobLedgerID,
-      interfaceFactory: icpFactory,
-    }));
-    
-    console.log("actors", bobLedgerActor);
+    console.log('actors', bobLedgerActor);
   };
 
   const fetchBalances = async () => {
-    // 
+    //
     // You'd need to replace this with actual logic to instantiate your actors and fetch balances
     // This is a placeholder for actor creation and balance fetching
 
-    console.log("Fetching balances...", bobLedgerActor, reBobActor);
-    if(bobLedgerActor === null ||  reBobActor === null ) return;
+    console.log('Fetching balances...', bobLedgerActor, reBobActor);
+    if (bobLedgerActor === null || reBobActor === null) return;
     // Fetch balances (assuming these functions return balances in a suitable format)
-  
-    console.log("Fetching balances...", icpBalance);
+
+    console.log('Fetching balances...', icpBalance);
 
     let bobLedgerBalance = await bobLedgerActor.icrc1_balance_of({
       owner: await window.ic.plug.agent.getPrincipal(),
@@ -167,8 +151,8 @@ function App() {
 
     await setBobLedgerBalance(bobLedgerBalance);
 
-    console.log("Fetching balances...", bobLedgerBalance);
-    
+    console.log('Fetching balances...', bobLedgerBalance);
+
     let reBobLedgerBalance = await reBobActor.icrc1_balance_of({
       owner: await window.ic.plug.agent.getPrincipal(),
       subaccount: [],
@@ -176,19 +160,21 @@ function App() {
 
     await setreBobLedgerBalance(reBobLedgerBalance);
 
-    console.log("Fetching balances...", reBobLedgerBalance);
+    console.log('Fetching balances...', reBobLedgerBalance);
 
-      console.log("Balances fetched:", bobLedgerBalance, icpBalance, reBobLedgerBalance);
-   
+    console.log(
+      'Balances fetched:',
+      bobLedgerBalance,
+      icpBalance,
+      reBobLedgerBalance
+    );
   };
-
-
 
   const handleLogout = async () => {
     setLoading(true);
     //const connected = await window.ic.plug.isConnected();
-    
-    if(isConnected){
+
+    if (isConnected) {
       try {
         await window.ic.plug.disconnect();
         setIsConnected(false);
@@ -203,64 +189,74 @@ function App() {
   const handleLogin = async () => {
     handleLogout();
     setLoading(true);
-      try {
-
-        
-        
-        const connected = await window.ic.plug.isConnected();
-        // console.log({connected})
-        if (!connected) {
-          let pubkey = await window.ic.plug.requestConnect({
-            // whitelist, host, and onConnectionUpdate need to be defined or imported appropriately
-            whitelist: [bobLedgerID, reBobCanisterID],
-            host: window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1') ? 'http://127.0.0.1:4943' : 'https://ic0.app',
-            onConnectionUpdate: async () => {
-              console.log("Connection updated", await window.ic.plug.isConnected());
-              await setIsConnected(!!await window.ic.plug.isConnected());
-            },
-          });
-          if(window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')){
-            await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
-          };
-          console.log("Connected with pubkey:", pubkey);
-          await setIsConnected(true);
-        } else {
-          if (window.location.href.includes("localhost") || window.location.href.includes("127.0.0.1")) {
-            await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
-          };
-          setIsConnected(true);
-          //await handleLogin();
-        };
-      } catch (error) {
-        console.error('Login failed:', error);
-        setIsConnected(false);
-      } finally {
-        setLoading(false);
+    try {
+      const connected = await window.ic.plug.isConnected();
+      // console.log({connected})
+      if (!connected) {
+        let pubkey = await window.ic.plug.requestConnect({
+          // whitelist, host, and onConnectionUpdate need to be defined or imported appropriately
+          whitelist: [bobLedgerID, reBobCanisterID],
+          host:
+            window.location.href.includes('localhost') ||
+            window.location.href.includes('127.0.0.1')
+              ? 'http://127.0.0.1:4943'
+              : 'https://ic0.app',
+          onConnectionUpdate: async () => {
+            console.log(
+              'Connection updated',
+              await window.ic.plug.isConnected()
+            );
+            await setIsConnected(!!(await window.ic.plug.isConnected()));
+          },
+        });
+        if (
+          window.location.href.includes('localhost') ||
+          window.location.href.includes('127.0.0.1')
+        ) {
+          await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
+        }
+        console.log('Connected with pubkey:', pubkey);
+        await setIsConnected(true);
+      } else {
+        if (
+          window.location.href.includes('localhost') ||
+          window.location.href.includes('127.0.0.1')
+        ) {
+          await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
+        }
+        setIsConnected(true);
+        //await handleLogin();
       }
-    
+    } catch (error) {
+      console.error('Login failed:', error);
+      setIsConnected(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMint = async () => {
     if (!isConnected) {
-      alert("Please connect your wallet first.");
+      alert('Please connect your wallet first.');
       return;
     }
 
-    
-    const amountToMint = prompt("Enter the amount of Bob to use to hash reBob:");
+    const amountToMint = prompt(
+      'Enter the amount of Bob to use to hash reBob:'
+    );
     const amountInE8s = BigInt(Number(amountToMint) * 100000000);
 
-    if (amountInE8s + (bobFee * 2n) > bobLedgerBalance) {
-      alert("You do not have enough Bob.");
+    if (amountInE8s + bobFee * 2n > bobLedgerBalance) {
+      alert('You do not have enough Bob.');
       return;
     }
 
-    if(!bobLedgerActor || !reBobActor) return;
+    if (!bobLedgerActor || !reBobActor) return;
 
     setLoading(true);
     try {
       // Assuming icpActor and icdvActor are already initialized actors
-      const approvalResult  = await bobLedgerActor.icrc2_approve({
+      const approvalResult = await bobLedgerActor.icrc2_approve({
         amount: amountInE8s + bobFee, // Approve amount and the fee to send bob back during icrc2_transfer_from() in deposit() function
         // Adjust with your canister ID and parameters
         spender: {
@@ -275,22 +271,24 @@ function App() {
         from_subaccount: [],
       });
 
-      if ("Ok" in approvalResult) {
-        alert("This may take a long time! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
-        let result = await reBobActor.deposit([], amountInE8s );
-        if("ok" in result){
-          alert("Mint successful! Block: " + result.ok.toString() + ".");
-        } else {  
-          alert("Mint failed! " + result.err.toString());
-        };
+      if ('Ok' in approvalResult) {
+        alert(
+          'This may take a long time! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.'
+        );
+        let result = await reBobActor.deposit([], amountInE8s);
+        if ('ok' in result) {
+          alert('Mint successful! Block: ' + result.ok.toString() + '.');
+        } else {
+          alert('Mint failed! ' + result.err.toString());
+        }
         fetchBalances();
         fetchStats();
       } else {
-        alert("Mint failed.");
+        alert('Mint failed.');
       }
     } catch (error) {
       console.error('Minting failed:', error);
-      alert("An error occurred.");
+      alert('An error occurred.');
     } finally {
       setLoading(false);
       await fetchBalances();
@@ -298,28 +296,29 @@ function App() {
     }
   };
 
-
   const handleWithdrawl = async () => {
     if (!isConnected) {
-      alert("Please connect your wallet first.");
+      alert('Please connect your wallet first.');
       return;
     }
 
-    
-    const amountToMint = prompt("Enter the amount of reBob to use to withdraw Bob:");
+    const amountToMint = prompt(
+      'Enter the amount of reBob to use to withdraw Bob:'
+    );
     const amountInE8s = BigInt(Number(amountToMint) * 1000000);
 
-    if (amountInE8s + bobFee + reBobFee > reBobLedgerBalance) { // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
-      alert("You do not have enough reBob.");
+    if (amountInE8s + bobFee + reBobFee > reBobLedgerBalance) {
+      // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
+      alert('You do not have enough reBob.');
       return;
     }
 
-    if(!bobLedgerActor || !reBobActor) return;
+    if (!bobLedgerActor || !reBobActor) return;
 
     setLoading(true);
     try {
       // Assuming icpActor and icdvActor are already initialized actors
-      const approvalResult  = await reBobActor.icrc2_approve({
+      const approvalResult = await reBobActor.icrc2_approve({
         amount: amountInE8s + bobFee, // Cover the fee of sending the bob back to the user.
         // Adjust with your canister ID and parameters
         spender: {
@@ -334,24 +333,26 @@ function App() {
         from_subaccount: [],
       });
 
-      if ("Ok" in approvalResult) {
-        alert("This may take a while! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.");
-        let result = await reBobActor.withdraw([], amountInE8s + bobFee );
-        if("ok" in result){
-          alert("Withdraw successful! Block: " + result.ok.toString() + ".");
+      if ('Ok' in approvalResult) {
+        alert(
+          'This may take a while! Your ICP has been authorized for minting. Please click ok and wait for the transaction to complete. A message box should appear after a few seconds.'
+        );
+        let result = await reBobActor.withdraw([], amountInE8s + bobFee);
+        if ('ok' in result) {
+          alert('Withdraw successful! Block: ' + result.ok.toString() + '.');
         } else {
-          console.log("fund failed", result);
-          alert("Withdraw failed! " + result.err.toString());
-        };
+          console.log('fund failed', result);
+          alert('Withdraw failed! ' + result.err.toString());
+        }
         fetchBalances();
         fetchStats();
       } else {
-        console.log("Approval failed", approvalResult); 
-        alert("Withdraw failed." + approvalResult.Err.toString());
+        console.log('Approval failed', approvalResult);
+        alert('Withdraw failed.' + approvalResult.Err.toString());
       }
     } catch (error) {
       console.error('Minting failed:', error);
-      alert("An error occurred.");
+      alert('An error occurred.');
     } finally {
       setLoading(false);
       await fetchBalances();
@@ -359,7 +360,9 @@ function App() {
     }
   };
 
-  
+  const handleBobFieldChange = () => {
+    console.log('bob field changed');
+  };
 
   return (
     <div className="App">
@@ -370,10 +373,7 @@ function App() {
         <a href="https://bob.fun" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
-        <a
-          href="https://proposals.networks/"
-          target="_blank"
-        >
+        <a href="https://proposals.networks/" target="_blank">
           <span className="logo-stack">
             <img
               src={motokoShadowLogo}
@@ -386,49 +386,71 @@ function App() {
       </div>
       <h1>BOB reHASH dapp</h1>
       <h2>Enlarge your Bob</h2>
-      
-      
-      
+
+      <div className="card"></div>
       <div className="card">
-      </div>
-      <div className="card">
-        
         {!isConnected ? (
-          <button onClick={handleLogin} disabled={loading}>Login with Plug</button>
+          <button onClick={handleLogin} disabled={loading}>
+            Login with Plug
+          </button>
         ) : (
           <>
-            <button onClick={handleLogout} disabled={loading}>Logout</button>
-            <h3>Your current $reBob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}</h3>
-            <h3>Your current $Bob Balance: {bigintToFloatString(bobLedgerBalance)}</h3>
+            <button onClick={handleLogout} disabled={loading}>
+              Logout
+            </button>
+            <h3>
+              Your current $reBob Balance:{' '}
+              {bigintToFloatString(reBobLedgerBalance, 6)}
+            </h3>
+            <h3>
+              Your current $Bob Balance: {bigintToFloatString(bobLedgerBalance)}
+            </h3>
             <div className="card">
-            {bobLedgerBalance < 40000 ? (
-              <div>
-                <p>You need more BOB to hash reBob. Send At least .0004 BOB to your principal. Your principal is {yourPrincipal}</p>
-              </div>
-            ) : (
-              <div>
-              <p>You can mint reBob. <br/>Your principal is {yourPrincipal}</p>
-              <button onClick={handleMint} disabled={loading}>
-                {"Click here to mint reBob"}
-              </button>
-              <p></p>
-              {
-                reBobLedgerBalance > 400n ? (
-                  <button onClick={handleWithdrawl} disabled={loading}>
-                    {"Click here to withdraw Bob"}
+              {bobLedgerBalance < 40000 ? (
+                <div>
+                  <p>
+                    You need more BOB to hash reBob. Send At least .0004 BOB to
+                    your principal. Your principal is {yourPrincipal}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p>
+                    You can mint reBob. <br />
+                    Your principal is {yourPrincipal}
+                  </p>
+                  <TextField
+                    label="Bob"
+                    variant="outlined"
+                    value={bobFieldValue}
+                    onChange={handleBobFieldChange}
+                    slotProps={{
+                      input: {
+                        inputMode: 'decimal', // Helps show the numeric pad with decimal on mobile devices
+                      },
+                    }}
+                  />
+                  <button onClick={handleMint} disabled={loading}>
+                    {'Click here to mint reBob'}
                   </button>
-                ) : (<p>Once you have more than 400 reBob you can withdraw Bob.</p>)
-              }
-              </div>
-            )}
-          </div>
-          
+                  <p></p>
+                  {reBobLedgerBalance > 400n ? (
+                    <button onClick={handleWithdrawl} disabled={loading}>
+                      {'Click here to withdraw Bob'}
+                    </button>
+                  ) : (
+                    <p>
+                      Once you have more than 400 reBob you can withdraw Bob.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </>
-        )
-        }
+        )}
       </div>
       <p className="read-the-docs">
-       Bitcorn Labs presents: build on bob Bob  Click logos to learn more.
+        Bitcorn Labs presents: build on bob Bob Click logos to learn more.
       </p>
     </div>
   );

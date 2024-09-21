@@ -16,7 +16,7 @@ export default defineConfig({
       },
       compress: {
         global_defs: {
-          ic: "window.someOtherICVariableName"
+          ic: 'window.someOtherICVariableName',
         },
       },
     },
