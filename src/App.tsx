@@ -264,6 +264,7 @@ function App() {
   const handleLogin = async () => {
     handleLogout();
     setLoading(true);
+    
     try {
       const connected = await window.ic.plug.isConnected();
       if (!connected) {
@@ -291,6 +292,7 @@ function App() {
         }
         console.log('Connected with pubkey:', pubkey);
         await setIsConnected(true);
+
       } else {
         if (
           window.location.href.includes('localhost') ||
@@ -311,10 +313,10 @@ function App() {
   const handleFailedWithdraw = async () => {
     setLoading(true);
 
-    //bobWithdraw(reBobLedgerAllowance);
-
+    //bobWithdraw(reBobLedgerAllowance); // 
     setLoading(false);
   };
+
 
   const handleFailedMint = async () => {
     setLoading(true);
@@ -358,6 +360,7 @@ function App() {
           )}{' '}
         </h3>
       </div>
+
 
       {!isConnected ? (
         <div className="card">
@@ -408,7 +411,6 @@ function App() {
                 reBobActor={reBobActor}
                 minimumTransactionAmount={3000000n}
               />
-
               <p></p>
             </div>
             <div
