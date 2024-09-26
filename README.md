@@ -1,7 +1,8 @@
-#REHASHER & exohashing
+paladin armor dragon wizard society
+iykyk
 
 
-fakebob is for testnet only
+
 
 
 1 canister on bob subnet for reBOB
