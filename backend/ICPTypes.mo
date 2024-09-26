@@ -209,7 +209,7 @@ module {
     icrc1_minting_account : ?Account;
     feature_flags : ?FeatureFlags;
   };
-  
+
   public type Service = actor {
     account_balance : shared query BinaryAccountBalanceArgs -> async Tokens;
     account_balance_dfx : shared query AccountBalanceArgs -> async Tokens;
@@ -236,5 +236,5 @@ module {
     symbol : shared query () -> async Symbol;
     transfer : shared TransferArgs -> async Result_5;
     transfer_fee : shared query {} -> async TransferFee;
-  }
-}
+  };
+};

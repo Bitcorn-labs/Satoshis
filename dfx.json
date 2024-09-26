@@ -7,10 +7,10 @@
         "node_compatibility": true
       }
     },
-    "fakebob": {
-      "type": "motoko",
+    "fakebob" : {
+      "type" : "motoko",
       "main": "backend/FakeBob.mo",
-      "declarations": {
+      "declarations":{
         "node_compatibility": true
       }
     },
