@@ -31,7 +31,7 @@ const reBobCanisterID =
   window.location.href.includes('localhost') ||
   window.location.href.includes('127.0.0.1')
     ? 'bkyz2-fmaaa-aaaaa-qaaaq-cai'
-    : 'qvwlv-uyaaa-aaaas-aidpq-cai';
+    : 'hjfd4-eqaaa-aaaam-adkmq-cai';
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -73,7 +73,7 @@ function App() {
     const bobIcActor = await ic('zfcdd-tqaaa-aaaaq-aaaga-cai'); // hard coding this because it will work in local still.
 
     const totalBobHeldResponse = await bobIcActor.call('icrc1_balance_of', {
-      owner: Principal.fromText('qvwlv-uyaaa-aaaas-aidpq-cai'), // hard coding this because it won't work with local of reBobCanisterID
+      owner: Principal.fromText('hjfd4-eqaaa-aaaam-adkmq-cai'), // hard coding this because it won't work with local of reBobCanisterID
       subaccount: [],
     });
 
