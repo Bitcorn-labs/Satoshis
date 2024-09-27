@@ -1,9 +1,5 @@
 import './App.css';
 import React, { useState, useEffect, ReactElement } from 'react';
-import motokoLogo from './assets/motoko_moving.png';
-import motokoShadowLogo from './assets/motoko_shadow.png';
-import reactLogo from './assets/bob.png';
-import viteLogo from './assets/corn.png';
 // import { useQueryCall, useUpdateCall } from '@ic-reactor/react';
 import { Principal } from '@dfinity/principal';
 // import {Agent, Actor, HttpAgent} from '@dfinity/agent';
@@ -21,6 +17,7 @@ import ShowTransactionStatus from './components/ShowTransactionStatus';
 import BobWithdrawField from './components/BobWithdrawField';
 
 import bigintToFloatString from './bigIntToFloatString';
+import GroupPhoto from './components/GroupPhoto';
 
 const bobCanisterID =
   window.location.href.includes('localhost') ||
@@ -264,7 +261,7 @@ function App() {
   const handleLogin = async () => {
     handleLogout();
     setLoading(true);
-    
+
     try {
       const connected = await window.ic.plug.isConnected();
       if (!connected) {
@@ -292,7 +289,6 @@ function App() {
         }
         console.log('Connected with pubkey:', pubkey);
         await setIsConnected(true);
-
       } else {
         if (
           window.location.href.includes('localhost') ||
@@ -310,138 +306,47 @@ function App() {
     }
   };
 
-  const handleFailedWithdraw = async () => {
-    setLoading(true);
-
-    //bobWithdraw(reBobLedgerAllowance); // 
-    setLoading(false);
-  };
-
-
-  const handleFailedMint = async () => {
-    setLoading(true);
-
-    //bobDeposit(bobLedgerAllowance);
-
-    setLoading(false);
-  };
-
   return (
-    <div className="App">
-      <div>
-        <a href="https://aalgg-jaaaa-aaaak-afkwq-cai.icp0.io/" target="_blank">
-          <img src={viteLogo} className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://bob.fun" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://proposals.networks/" target="_blank">
-          <span className="logo-stack">
-            <img
-              src={motokoShadowLogo}
-              className="logo motoko-shadow"
-              alt="Motoko logo"
-            />
-            <img src={motokoLogo} className="logo motoko" alt="Motoko logo" />
-          </span>
-        </a>
-      </div>
-      <div>
-        <h1>BOB reHASH dapp</h1>
-        <h2>Enlarge your Bob</h2>
-        <h3>
-          Total Bob hashed:{' '}
-          {totalBobHeld !== '' ? (
-            <>{totalBobHeld} Bob</>
-          ) : (
-            <>
-              <CircularProgress size={16} />
-            </>
-          )}{' '}
-        </h3>
-      </div>
-
-
-      {!isConnected ? (
-        <div className="card">
-          <button onClick={handleLogin} disabled={loading}>
-            Login with Plug
-          </button>
+    <div className="App" style={{ maxWidth: '600px' }}>
+      <header>
+        <h1>DRAGGIN KARMA POINTS</h1>
+        <h1>Paladin Wizard Society</h1>
+        <h2>
+          Use your karma points to unleash your inner Dragon Paladin Wizard
+        </h2>
+      </header>
+      <div className="container">
+        <div className="image-box">
+          <img src="./assets/Paladin.jpg" alt="Paladin" />
+          <p>Brave Paladin</p>
         </div>
-      ) : (
-        <>
-          <p>
-            Your principal is
-            <br />
-            {yourPrincipal}
-          </p>
-          <button onClick={handleLogout} disabled={loading}>
-            Logout
-          </button>
-
-          <div
-            style={{
-              marginTop: '16px',
-              flexDirection: 'column',
-              display: 'flex',
-              alignItems: 'center',
-              minWidth: '250px',
-              width: 'fit-content', // I can't get it to stop expanding and contracting.
-            }}
-            className="card"
-          >
-            <div
-              style={{
-                border: '3px solid lightgrey',
-                padding: '10px',
-                width: '100%',
-              }}
-            >
-              <h2>reHASH Bobs:</h2>
-              <h3>$Bob Balance: {bigintToFloatString(bobLedgerBalance)}</h3>
-              <ReBobMintingField
-                loading={loading}
-                setLoading={setLoading}
-                bobLedgerBalance={bobLedgerBalance}
-                bobFee={bobFee}
-                isConnected={isConnected}
-                reBobCanisterID={reBobCanisterID}
-                bobLedgerActor={bobLedgerActor}
-                cleanUp={cleanUp}
-                reBobActor={reBobActor}
-                minimumTransactionAmount={3000000n}
-              />
-              <p></p>
-            </div>
-            <div
-              style={{
-                border: '3px solid lightgrey',
-                padding: '10px',
-                width: '100%',
-                marginTop: '16px',
-              }}
-            >
-              <h2>unHASH reBobs: </h2>
-              <h3>
-                $reBob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}
-              </h3>
-              <BobWithdrawField
-                loading={loading}
-                setLoading={setLoading}
-                reBobLedgerBalance={reBobLedgerBalance}
-                reBobFee={reBobFee}
-                bobFee={bobFee}
-                isConnected={isConnected}
-                reBobActor={reBobActor}
-                reBobCanisterID={reBobCanisterID}
-                cleanUp={cleanUp}
-              />
-            </div>
-          </div>
-        </>
-      )}
+        <div className="image-box">
+          <img src="./assets/Borovan.jpg" alt="Dragon" />
+          <p>Dragon king</p>
+        </div>
+        <div className="image-box">
+          <img src="./assets/Priests.jpg" alt="Wizard" />
+          <p>protect your eggs</p>
+        </div>
+        <div className="image-box">
+          <img src="./assets/Eggs.jpg" alt="Egg" />
+          <p>draggin karma eggs</p>
+        </div>
+      </div>
+      <div className="banner">Dragon Paladin Wizards</div>
+      {/* <!--------------------------------ACTION--> */}
+      <div className="egg-section">
+        <h2>use karma points</h2>
+        <p>
+          You've sent <span id="eggsSent">0</span> dragon karma to this world.
+          How much more will you send?
+        </p>
+        <button id="sendEggButton">deposit dkp in the dragons keep</button>
+      </div>
+      {/* <!--------------------------------ACTION--> */}
+      <GroupPhoto />
       <p className="read-the-docs">
-        Bitcorn Labs presents: build on bob Bob Click logos to learn more.
+        Bitcorn Labs presents: Dragon Paladin Wizard
       </p>
     </div>
   );
