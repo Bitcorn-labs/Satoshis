@@ -18,7 +18,7 @@ import ICRC2 "mo:icrc2-mo/ICRC2";
 import ICRC3 "mo:icrc3-mo/";
 import ICRC4 "mo:icrc4-mo/ICRC4";
 
-///Bob Token
+///DKP Token
 import Types "Types";
 import Blob "mo:base/Blob";
 import Int "mo:base/Int";
