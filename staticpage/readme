@@ -53,17 +53,13 @@ DRAGON PALADIN WIZARD SOCIETY -- DKP DPW
                                `Ybo:-'
 
 I had alot of fun making this, so I hope it makes sense. The Index.HTML page is the main front end of the dapp. I have begun linking
-to the NFTs for the paladins, and I included a link /245 which is bascily the place holder "we are building" image; thus the dapp once
-the rebob fork is activated, should be ready for casual use. 
-Your really a boss at this Sir. Im impressed every day and its a pleasure to develop fun stuff like this together. I may shed a tear,
-lol. Heres some notes to help you on your journey:
+to the NFTs for the paladins, and I included a link /245 which is bascily the place holder "we are building" image; thus the dapp once the rebob fork is activated, should be ready for casual use. 
+Your really a boss at this Sir. Im impressed every day and its a pleasure to develop fun stuff like this together. I may shed a tear, lol. Heres some notes to help you on your journey:
 
 
-- imageurl.txt contains a string and the link to make new strings. IDK if the image is correct size or whatever
-  but theres a new string. I put the images in the assets file just so they are there. 
+- imageurl.txt contains a string and the link to make new strings. IDK if the image is correct size or whatever but theres a new string. I put the images in the assets file just so they are there. 
 
-- keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher. Its in the
-  center of the html
+- keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher. Its in the  center of the html
 
  -index.html has a dialogue box where it says "travlers have sent o karma points to this world" like rebob, this should display
   the cumulative total of eggs within the dapp
