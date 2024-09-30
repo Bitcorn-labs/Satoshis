@@ -1,6 +1,4 @@
-paladin armor dragon wizard society
-
-
+dragonwizards.club
 
 # Vite + React + Motoko
 
