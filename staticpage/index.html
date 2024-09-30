@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggin Karma - Dragon Paladin Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #2e003e; /* Dark purple background */
+            font-family: 'Press Start 2P', cursive; /* Retro game font */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Ensure padding and borders are included in element's total width and height */
+        }
+
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        header {
+            background-color: #4a0073; /* Purple header */
+            padding: 20px;
+            text-align: center;
+            width: 100%; /* Ensure header takes 100% width */
+        }
+
+        h1 {
+            color: #50fa7b; /* Green color for titles */
+            font-size: 2.5em;
+            text-shadow: 2px 2px 0 #ff5555; /* Red shadow for game-like effect */
+        }
+
+        h2 {
+            color: #ff5555; /* Red subtitles */
+            font-size: 1em;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns for the first four boxes */
+            gap: 15px;
+            padding: 20px;
+            width: 100%; /* Ensure container fills 100% width */
+            max-width: 1200px; /* Optional: limit container width */
+            margin: 0 auto; /* Center container */
+        }
+
+        .image-box {
+            position: relative;
+            width: 100%; /* Make box width responsive */
+            height: 250px; /* Fixed height */
+            border: 5px solid #50fa7b; /* Green border */
+            border-radius: 10px;
+            background-color: #800020; /* Red box background */
+            overflow: hidden;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .image-box p {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #50fa7b; /* Green text */
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .banner {
+            background-color: #4a0073;
+            text-align: center;
+            padding: 15px;
+            font-size: 2em;
+            color: #50fa7b;
+            text-shadow: 2px 2px 0 #ff5555;
+            margin: 20px 0;
+            width: 100%; /* Ensure banner fills 100% width */
+        }
+
+        .egg-section {
+            background-color: #4a0073;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 80%; /* Responsive width */
+            max-width: 1200px; /* Optional max width */
+            color: white;
+            text-align: center;
+            font-size: 1.3em;
+            box-shadow: 0px 0px 20px #50fa7b; /* Neon green shadow */
+        }
+
+        .egg-section button {
+            padding: 10px 20px;
+            background-color: #ff5555; /* Red button */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: white;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .egg-section button:hover {
+            transform: scale(1.1); /* Button hover effect */
+        }
+
+        .extra-images-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid for extra images */
+            gap: 15px;
+            padding: 20px;
+            width: 100%; /* Ensure container fills 100% width */
+            max-width: 1200px; /* Optional max width */
+            margin: 0 auto; /* Center container */
+        }
+
+        footer {
+            background-color: #2e003e;
+            padding: 20px;
+            color: #ff5555;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1em;
+            width: 100%; /* Ensure footer fills 100% width */
+        }
+
+        footer button {
+            background-color: #ff5555;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        footer button:hover {
+            transform: scale(1.1); /* Button hover effect */
+        }
+
+        /* Media queries for responsive design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr); /* Keep two columns for smaller screens */
+            }
+
+            .extra-images-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust columns on smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                grid-template-columns: 1fr; /* Single column layout for very small screens */
+            }
+
+            .extra-images-container {
+                grid-template-columns: 1fr; /* Single column for extra images on small screens */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+
+
+<header>
+    <h1>DRAGGIN KARMA POINTS</h1>
+    <h1>Paladin Wizard Society</h1>
+    <h2>Use your karma points to unleash your inner Dragon Paladin Wizard</h2>
+</header>
+
+<div class="container">
+    <div class="image-box">
+        <img src="assets/Paladin.jpg" alt="Paladin">
+        <p>Brave Paladin</p>
+    </div>
+    <div class="image-box">
+        <img src="assets/potion.jpg" alt="Dragon">
+        <p>unleash your dragon magic</p>
+    </div>
+    <div class="image-box">
+        <img src="assets/Priests.jpg" alt="Wizard">
+        <p>utilize your Karma</p>
+    </div>
+    <div class="image-box">
+        <img src="assets/Eggs.jpg" alt="Egg">
+        <p>draggin karma eggs</p>
+    </div>
+</div>
+
+<!-- Banner Section -->
+<div class="banner">
+    Dragon Paladin Wizards
+</div>
+
+<div class="egg-section">
+    <h2>use karma points</h2>
+    <p>Travlers have sent <span id="eggsSent">0</span> dragon karma to this world.</p>
+   <button onclick="window.location.href='https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245'">Enter the Keep</button>
+
+   <button onclick="window.location.href='lair.html'">Enter the Lair</button>
+</div>
+
+
+<div class="extra-images-container">
+    <!-- 27 additional image boxes -->
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/Jordan.jpg" alt="jordan">
+        <p>Jordan</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/889.jpg" alt="889">
+        <p>889</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/Bongwolke.jpg" alt="bongwolke">
+        <p>Bongwolke</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/Contractor.jpg" alt="Image 4">
+        <p>contractor33</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/247" target="_blank">
+    <div class="image-box">
+        <img src="assets/hood.jpg" alt="Image 5">
+        <p>hoodboss</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/bigv.jpg" alt="Image 6">
+        <p>big v</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/243" target="_blank">
+    <div class="image-box">
+        <img src="assets/vmr.jpg" alt="VMR">
+        <p>VMR</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/250" target="_blank">
+    <div class="image-box">
+        <img src="assets/snassy.jpg" alt="Image 8">
+        <p>snassy</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/stipe.jpg" alt="Image 9">
+        <p>stipe</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/asdad.jpg" alt="Image 10">
+        <p>asdad</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/corn.jpg" alt="Image 11">
+        <p>corntoshi</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/smug.jpg" alt="Image 12">
+        <p>smugandcomfy</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/420.jpg" alt="Image 13">
+        <p>420herbalist</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/246" target="_blank">
+    <div class="image-box">
+        <img src="assets/Afat.jpg" alt="Image 14">
+        <p>afat</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/mikejones.jpg" alt="Image 15">
+        <p>realmikejones</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/jr.jpg" alt="Image 20">
+        <p>JR</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/scarn.jpg" alt="Image 21">
+        <p>michael scarn</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/spell.jpg" alt="Image 22">
+        <p>spellkaster</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/taco.jpg" alt="Image 23">
+        <p>bike taco</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/jogu.jpg" alt="Image 24">
+        <p>jogu</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/lord.jpg" alt="Image 25">
+        <p>lordhoochie</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/infu.jpg" alt="Image 23">
+        <p>Infu</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/249" target="_blank">
+    <div class="image-box">
+        <img src="assets/egido.jpg" alt="Image 24">
+        <p>Egido Val</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/passion.jpg" alt="Image 24">
+        <p>passion planet</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/" target="_blank">
+    <div class="image-box">
+        <img src="assets/vic.jpg" alt="Image 24">
+        <p>tricky vic</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/248" target="_blank">
+    <div class="image-box">
+        <img src="assets/wiz.jpg" alt="Image 25">
+        <p>wizardly frog</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/sys.jpg" alt="Image 23">
+        <p>YSYSM</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/thyssa.jpg" alt="Image 24">
+        <p>Thyssa</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/tirex.jpg" alt="Image 24">
+        <p>tirex</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/drogo.jpg" alt="Image 24">
+        <p>Drogo</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/244" target="_blank">
+    <div class="image-box">
+        <img src="assets/rare.jpg" alt="Image 24">
+        <p>medium rare</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/jewel.jpg" alt="Image 23">
+        <p>Jewel of the future</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/Borovan.jpg" alt="Image 24">
+        <p>Dragon Lord Borovan</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/summon.jpg" alt="Image 24">
+        <p>summonstrumim</p>
+    </div>
+</a>
+<a href="https://dodkw-jyaaa-aaaag-qbryq-cai.raw.icp0.io/245" target="_blank">
+    <div class="image-box">
+        <img src="assets/hamish.jpg" alt="Image 24">
+        <p>hamish</p>
+    </div>
+</a>
+<a href="https://discord.gg/RU9YACgc" target="_blank">
+    <div class="image-box">
+        <img src="assets/sns.jpg" alt="Image 24">
+        <p>Those Forgotten</p>
+    </div>
+</div>
+<footer>
+    <p>Powered by the Internet Computer</p>
+    <p>&copy; 2024 Bitcorn Labs — DKP DPW Society</p>
+    <p>Disclaimer: This site does not contain investment advice. All information found on this site can be inaccurate, and is presented for entertainment purposes only. No responsibility is accepted by this site for inaccurate information presented here. Engage with this website at your own risk and discretion. Always conduct your own research and consult with financial professionals before participating in any cryptocurrency activities</p>
+</footer>
