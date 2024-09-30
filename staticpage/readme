@@ -4,8 +4,6 @@ some notes:
 
 - keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher
 
-- in index.html, the button for Keep redirects to the building nft, it needs to direct to keep.html when its integrated into the main dapp
-
 - lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made. the frame is already on the page.
 
 ----
