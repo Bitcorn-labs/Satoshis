@@ -1,13 +1,73 @@
-welcome to web2 dragon paladin wizard front end:
-i had alot of fun making this, so I hope it makes sense
-some notes:
+
+                                                            ,   .
+           `.                                               `. ,;
+            Y.                                   ,oo8""      :oo
+             8.                                ,d88"         :88
+             `8.                         ,o. ,o88P          ,dP
+              :8                      ,d888P,8888 ,od8ooood8"'
+   `.          Y8.            ,-..,o888P"Y88888P8P"'  `""'
+    `b.         Y8.          (  `Y88888b.d888888o.   ,
+     `Yb.        Y8.           ,""88888888888888888P"       ,-
+       "8bo       Y8o         ( :8888888888888""           db    ,-
+         Y88o      Y8b.         `888888"""YP'             888' :88;
+          `"88o.   ,Y88o        :88888'                   Y8P ,d8"'
+             "88b. `8d88b.      :88888                    :8 ,88;  ,
+`"oo.          "888.`88888o     :8888b                    d8b88P,od88"'
+   `"888oo.      `Y888888888.    88888b                  ,888888888P'
+       `Y88888boo'Y8888888888.   `888888b.              ,888888"'
+          `"Y8888888888888888'    `88888888b.          d8888P'
+              `"Y8888888888P'     ,d88o8888888.      .88888'
+               "Y888888888'      d888888888888Y;   ,888P':P
+                 ;88888888b.    d888888888888b   ,d88P'  8;
+            ,ood888888888888o.,d8888888888888o ,d888"   ,88
+         ,`"""""' ,8888888888888888Y"8P8d888888'888'    Y8"
+        (        o888888888888888P:d888888888888'P'      `-
+               ,d888Y88888888888P :Y8888888888888.
+             ,o88P",8":P"8Y8P8P ,oY88888888888888b
+           ,o88" ,d" `' ` YP  ,8P8888888888888888'         ,-
+          (     `'        ,d88Y8888888888888888888.     :8o.
+                       ,oo8P8d888888888888888888888.    88' ,o,-
+                    ,:d8P88888888888888888888Y8888Y8b  d8'o888P
+                   ,88Pb888888888888888888888d8;"8 Y88o88d88""
+                 ,d8P888888888888888888Y88888;8     `Y8888'  ,o,-
+                :88`8888888888888888o8bd8888P        ,88888888PY
+               ,88`8888888888888888888888P"         d8"     ""
+               Y8b88888888"88888888P"""'          ,d8P
+               o8d888888Pb888""'                 :888'
+              `8;888888b88P"          ,ooo88bo.  `:;
+   -hrr-       o888888b88'          o8888888888b.  `-
+              "8d88888d8'        ,o888888"Y888"8b
+               :88888b88       o'88888Pbd888888.8;
+               8;88888'88oooo8"b8888"o8P"""Y8888:;
+               `8'88888dP""Ybd8888P88"      `888d
+               `88'8888888888888Pb"'         88`P
+                `88dY888888888Pb'           d88d'
+                  `88bd8"""YoP"          ,d888P
+                   `88888888'    ,oooo888888"'
+                              ,o888888P"""
+                             d88P""
+                            :88'
+                            88;
+                            Y8b
+                             "88o     )
+                               `Ybo:-'
+
+I had alot of fun making this, so I hope it makes sense. The Index.HTML page is the main front end of the dapp. I have begun linking
+to the NFTs for the paladins, and I included a link /245 which is bascily the place holder "we are building" image; thus the dapp once
+the rebob fork is activated, should be ready for casual use. 
+Your really a boss at this Sir. Im impressed every day and its a pleasure to develop fun stuff like this together. I may shed a tear,
+lol. Heres some notes to help you on your journey:
+
+- imageurl.txt contains a string and the link to make new strings. IDK if the image is correct size or whatever
+  but theres a new string. I put the images in the assets file just so they are there. 
 
 - keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher
 
-- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made.
-the frame is already on the page.
+- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to
+  be deployed to activate it so the commits to openchat can be made. the frame is already on the page. I think its correct?
+  Peninant worked on tendy zone, andhe enabled the xframe using the below documentation but I havent seen the repo, I just 
+  tried to use the same iframe method.
 
--imageurl contains a string and the link to make new strings. IDK if the image is correct size or whatever but theres a new string
 
 ----
 OPENCHAT XFRAME: 
@@ -36,3 +96,39 @@ const client = await initialise(iframe, {
         }
     }
 });
+
+
+
+                                                 /===-_---~~~~~~~~~------____
+                                                |===-~___                _,-'
+                 -==\\                         `//~\\   ~~~~`---.___.-~~
+             ______-==|                         | |  \\           _-~`
+       __--~~~  ,-/-==\\                        | |   `\        ,'
+    _-~       /'    |  \\                      / /      \      /
+  .'        /       |   \\                   /' /        \   /'
+ /  ____  /         |    \`\.__/-~~ ~ \ _ _/'  /          \/'
+/-'~    ~~~~~---__  |     ~-/~         ( )   /'        _--~`
+                  \_|      /        _)   ;  ),   __--~~
+                    '~~--_/      _-~/-  / \   '-~ \
+                   {\__--_/}    / \\_>- )<__\      \
+                   /'   (_/  _-~  | |__>--<__|      |
+                  |0  0 _/) )-~     | |__>--<__|      |
+                  / /~ ,_/       / /__>---<__/      |
+                 o o _//        /-~_>---<__-~      /
+                 (^(~          /~_>---<__-      _-~
+                ,/|           /__>--<__/     _-~
+             ,//('(          |__>--<__|     /                  .----_
+            ( ( '))          |__>--<__|    |                 /' _---_~\
+         `-)) )) (           |__>--<__|    |               /'  /     ~\`\
+        ,/,'//( (             \__>--<__\    \            /'  //        ||
+      ,( ( ((, ))              ~-__>--<_~-_  ~--____---~' _/'/        /'
+    `~/  )` ) ,/|                 ~-_~>--<_/-__       __-~ _/
+  ._-~//( )/ )) `                    ~~-'_/_/ /~~~~~~~__--~
+   ;'( ')/ ,)(                              ~~~~~~~~~~
+  ' ') '( (/
+    '   '  `
+
+
+
+
+
