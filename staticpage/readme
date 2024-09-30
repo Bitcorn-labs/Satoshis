@@ -9,14 +9,8 @@ some notes:
 - lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made. the frame is already on the page.
 
 ----
-OPENCHAT XFRAME:
-below js 
-
-
-
-
+OPENCHAT XFRAME: 
 https://github.com/open-chat-labs/openchat-xframe?tab=readme-ov-file#iframe-htmliframeelement
-
 
 import { initialise } from '@open-ic/openchat-xframe';
 
