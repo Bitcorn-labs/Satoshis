@@ -4,7 +4,8 @@ some notes:
 
 - keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher
 
-- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made. the frame is already on the page.
+- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made.
+the frame is already on the page.
 
 ----
 OPENCHAT XFRAME: 
