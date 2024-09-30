@@ -1,0 +1,43 @@
+welcome to web2 dragon paladin wizard front end:
+i had alot of fun making this, so I hope it makes sense
+some notes:
+
+- keep.html is where the "dapp" should operate, theres a diologue box that should house the action of the rehasher
+
+- in index.html, the button for Keep redirects to the building nft, it needs to direct to keep.html when its integrated into the main dapp
+
+- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to be deployed to activate it so the commits to openchat can be made. the frame is already on the page.
+
+----
+OPENCHAT XFRAME:
+below js 
+
+
+
+
+https://github.com/open-chat-labs/openchat-xframe?tab=readme-ov-file#iframe-htmliframeelement
+
+
+import { initialise } from '@open-ic/openchat-xframe';
+
+const client = await initialise(iframe, {
+    targetOrigin: 'https://oc.app',
+    initialPath:
+        '/community/rfeib-riaaa-aaaar-ar3oq-cai/channel/334961401678552956581044255076222828441',
+    theme: {
+        name: 'my-app-theme',
+        base: 'dark',
+        overrides: {
+            primary: "green",
+            bd: 'rgb(91, 243, 190)',
+            bg: 'transparent',
+            txt: "black",
+            placeholder: "green",
+            'txt-light': '#75c8af',
+            timeline: {
+                txt: "yellow"
+            },
+            ... // more theme overrides
+        }
+    }
+});
