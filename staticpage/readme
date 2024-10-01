@@ -64,7 +64,7 @@ Your really a boss at this Sir. Im impressed every day and its a pleasure to dev
  -index.html has a dialogue box where it says "travlers have sent o karma points to this world" like rebob, this should display
   the cumulative total of eggs within the dapp
 
-- lair.hmtl is the openchat iframe. below is the link to the github documentstion and the copy-paste of what needs to
+- lair.hmtl is the openchat iframe. iframe works on the web2 deployment but it doesnt have a sandbox.  below is the link to the github documentstion and the copy-paste of what needs to
   be deployed to activate it so the commits to openchat can be made. the frame is already on the page. I think its correct?
   Peninant worked on tendy zone, andhe enabled the xframe using the below documentation but I havent seen the repo, I just 
   tried to use the same iframe method. i think the colors and stuff are incorrect but yeah the parh is correct. 
