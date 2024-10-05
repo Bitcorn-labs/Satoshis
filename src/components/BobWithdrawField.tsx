@@ -146,6 +146,7 @@ const BobWithdrawField: React.FC<BobWithdrawFieldProps> = ({
       );
       const result = await reBobActor.withdraw([], amountInE8s);
       if ('ok' in result) {
+        addStatus("Bob's your uncle.");
         addStatus(
           `Swapped ${bigintToFloatString(
             amountInE8s,
