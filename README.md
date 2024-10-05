@@ -5,4 +5,4 @@ Dragon Paladin Wizard Society
 
 dragonwizards.club
 
-
+DRAGON PALADIN WIZARD SOCIETY -- DKP DPW
