@@ -361,7 +361,7 @@ shared ({ caller = _owner }) actor class Token(
 
   // custom function to mint myself tokens for testing:
   public shared ({ caller }) func mint_tokens() : async Result.Result<(Nat, Nat), Text> {
-    let mintingAmount : Nat = 20_0000_0000;
+    let mintingAmount : Nat = 20_000_000_0000_0000;
     let newtokens = await* icrc1().mint_tokens(
       icrc1().get_state().minting_account.owner,
       {

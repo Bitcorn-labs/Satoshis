@@ -3,11 +3,11 @@ import { TextField, ThemeProvider } from '@mui/material';
 import theme from '../theme';
 import bigintToFloatString from '../bigIntToFloatString';
 import { Principal } from '@dfinity/principal';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d'; // why is this icpService?
+import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
 import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import ShowTransactionStatus from './ShowTransactionStatus';
 
-interface BobWithdrawFieldProps {
+interface BackendWithdrawFieldProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
   reBobLedgerBalance: bigint;
@@ -19,7 +19,7 @@ interface BobWithdrawFieldProps {
   cleanUp: () => void;
 }
 
-const BobWithdrawField: React.FC<BobWithdrawFieldProps> = ({
+const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
   loading,
   setLoading,
   reBobLedgerBalance,
@@ -280,4 +280,4 @@ const BobWithdrawField: React.FC<BobWithdrawFieldProps> = ({
   );
 };
 
-export default BobWithdrawField;
+export default BackendWithdrawField;

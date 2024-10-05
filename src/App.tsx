@@ -17,6 +17,8 @@ import PlugLoginHandler from './components/PlugLoginHandler';
 import InternetIdentityLoginHandler from './components/InternetIdentityLoginHandler';
 import TokenManagement from './components/TokenManagement';
 import GroupPhoto from './components/GroupPhoto';
+import TokenObject from './TokenObject';
+import BackendMintingField from './components/BackendMintingField';
 
 const bobCanisterID =
   process.env.DFX_NETWORK === 'local'
@@ -53,8 +55,48 @@ function App() {
 
   const [loggedInPrincipal, setLoggedInPrincipal] = useState('');
 
-  const bobFee: bigint = 1_000_000n;
-  const reBobFee: bigint = 10_000n;
+  const dkpTokenDetails = {
+    fee: 100_000n,
+    ticker: 'dkp',
+    decimals: 8,
+    canisterId:
+      process.env.DFX_NETWORK === 'local'
+        ? 'bd3sg-teaaa-aaaaa-qaaba-cai'
+        : 'zfcdd-tqaaa-aaaaq-aaaga-cai',
+  };
+
+  const dpwTokenDetails = {
+    fee: 1250n,
+    ticker: 'dpw',
+    decimals: 12,
+    canisterId:
+      process.env.DFX_NETWORK === 'local'
+        ? 'bkyz2-fmaaa-aaaaa-qaaaq-cai'
+        : 'hjfd4-eqaaa-aaaam-adkmq-cai',
+  };
+
+  const [dkpTokenObject, setDkpTokenObject] = useState<TokenObject>(
+    new TokenObject({
+      ...dkpTokenDetails,
+      actor: null,
+      ledgerBalance: 0n,
+      setToken: null,
+      loggedInPrincipal: '',
+    })
+  );
+
+  const [dpwTokenObject, setDpwTokenObject] = useState<TokenObject>(
+    new TokenObject({
+      ...dpwTokenDetails,
+      actor: null,
+      ledgerBalance: 0n,
+      setToken: null,
+      loggedInPrincipal: '',
+    })
+  );
+
+  //const bobFee: bigint = 1_000_000n;
+  //const reBobFee: bigint = 10_000n;
 
   const fetchTotalTokens = async () => {
     // const totalBobHeldResponse = await bobLedgerActor.icrc1_balance_of({
@@ -87,6 +129,27 @@ function App() {
     fetchTotalTokens();
     // checkLoggedIn();
     console.log(process.env.DFX_NETWORK);
+
+    setDkpTokenObject(
+      new TokenObject({
+        ...dkpTokenDetails,
+        actor: null,
+        ledgerBalance: 0n,
+        setToken: setDkpTokenObject,
+        loggedInPrincipal: '',
+      })
+    );
+
+    setDpwTokenObject(
+      new TokenObject({
+        ...dpwTokenDetails,
+        actor: null,
+        ledgerBalance: 0n,
+        setToken: setDpwTokenObject,
+        loggedInPrincipal: '',
+      })
+    );
+
     //setUpActors(); // can't use plug actors as anonymous?
     //console.log("first time", isConnected);
     //checkConnection();
@@ -127,70 +190,6 @@ function App() {
     }
   };
 
-  const getBobLedgerBalance = async () => {
-    if (bobLedgerActor === null) return;
-
-    if (!isValidPrincipal(loggedInPrincipal)) return;
-
-    const bobLedgerBalanceResponse = await bobLedgerActor.icrc1_balance_of({
-      owner: Principal.fromText(loggedInPrincipal),
-      subaccount: [],
-    });
-
-    //console.log('Fetching balances...', { bobLedgerBalanceResponse });
-
-    setBobLedgerBalance(bobLedgerBalanceResponse);
-  };
-
-  const getReBobLedgerBalance = async () => {
-    if (reBobActor === null) return;
-    if (!isValidPrincipal(loggedInPrincipal)) return;
-    const reBobLedgerBalanceResponse = await reBobActor.icrc1_balance_of({
-      owner: Principal.fromText(loggedInPrincipal),
-      subaccount: [],
-    });
-
-    setreBobLedgerBalance(reBobLedgerBalanceResponse);
-
-    //console.log('Fetching balances...', { reBobLedgerBalanceResponse });
-  };
-
-  const getBobLedgerAllowance = async () => {
-    if (bobLedgerActor === null) return;
-    const bobLedgerAllowanceResponse = await bobLedgerActor.icrc2_allowance({
-      account: {
-        owner: Principal.fromText(loggedInPrincipal),
-        subaccount: [],
-      },
-      spender: { owner: Principal.fromText(reBobCanisterID), subaccount: [] },
-    });
-
-    setBobLedgerAllowance(bobLedgerAllowanceResponse.allowance);
-
-    // console.log(
-    //   'Fetching balances... (bobLedgerAllowanceResponse)',
-    //   bobLedgerAllowanceResponse.allowance
-    // ); // Need to add check if response was good.
-  };
-
-  const getReBobLedgerAllowance = async () => {
-    if (reBobActor === null) return;
-    const reBobLedgerAllowanceResponse = await reBobActor.icrc2_allowance({
-      account: {
-        owner: Principal.fromText(loggedInPrincipal),
-        subaccount: [],
-      },
-      spender: { owner: Principal.fromText(reBobCanisterID), subaccount: [] },
-    });
-
-    setReBobLedgerAllowance(reBobLedgerAllowanceResponse.allowance); // Need to add check if response was good.
-
-    // console.log(
-    //   'Fetching balances... (reBobLedgerAllowanceResponse)',
-    //   reBobLedgerAllowanceResponse.allowance
-    // );
-  };
-
   const fetchBalances = async () => {
     //
     // You'd need to replace this with actual logic to instantiate your actors and fetch balances
@@ -201,13 +200,16 @@ function App() {
     //if (!isConnected) return;
 
     // console.log('Fetching balances...', bobLedgerActor, reBobActor);
-    if (bobLedgerActor === null || reBobActor === null) return;
+    //if (bobLedgerActor === null || reBobActor === null) return;
     // Fetch balances (assuming these functions return balances in a suitable format)
 
-    getBobLedgerBalance();
-    getReBobLedgerBalance();
-    getBobLedgerAllowance();
-    getReBobLedgerAllowance();
+    // getBobLedgerBalance();
+    //dkpTokenObject.getLedgerBalance(loggedInPrincipal, setDkpTokenObject);
+    //dpwTokenObject.getLedgerBalance(loggedInPrincipal, setDpwTokenObject);
+
+    // getReBobLedgerBalance();
+    // getBobLedgerAllowance();
+    // getReBobLedgerAllowance();
   };
 
   return (
@@ -239,11 +241,8 @@ function App() {
       </div>
       <div className="banner">Dragon Paladin Wizards</div>
       {/* <!--------------------------------ACTION--> */}
-      <InternetIdentityLoginHandler
-        bobCanisterID={bobCanisterID}
-        setBobLedgerActor={setBobLedgerActor}
-        reBobCanisterID={reBobCanisterID}
-        setreBobActor={setreBobActor}
+      <PlugLoginHandler
+        tokens={[dkpTokenObject, dpwTokenObject]}
         loading={loading}
         setLoading={setLoading}
         isConnected={isConnected}
@@ -253,6 +252,89 @@ function App() {
         loggedInPrincipal={loggedInPrincipal}
         setLoggedInPrincipal={setLoggedInPrincipal}
       />
+      <InternetIdentityLoginHandler
+        tokens={[dkpTokenObject, dpwTokenObject]}
+        loading={loading}
+        setLoading={setLoading}
+        isConnected={isConnected}
+        setIsConnected={setIsConnected}
+        connectionType={connectionType}
+        setConnectionType={setConnectionType}
+        loggedInPrincipal={loggedInPrincipal}
+        setLoggedInPrincipal={setLoggedInPrincipal}
+      />
+      <button
+        onClick={() => {
+          console.log(dkpTokenObject);
+
+          dkpTokenObject.getLedgerBalance();
+          dpwTokenObject.getLedgerBalance();
+        }}
+      >
+        clickme
+      </button>
+      {isConnected ? (
+        <>
+          <div
+            style={{
+              border: '3px solid lightgrey',
+              padding: '10px',
+              width: '100%',
+            }}
+          >
+            <h2>reHASH Bobs:</h2>
+            <h3>{`$${dkpTokenObject.ticker} Balance: ${bigintToFloatString(
+              dkpTokenObject.ledgerBalance,
+              dkpTokenObject.decimals
+            )}`}</h3>
+            <BackendMintingField
+              inputToken={dkpTokenObject}
+              outputToken={dpwTokenObject}
+              loading={loading}
+              setLoading={setLoading}
+              isConnected={isConnected}
+              // cleanUp={cleanUp}
+              minimumTransactionAmount={3000000n}
+            />
+
+            <p></p>
+          </div>
+          {/* <div
+              style={{
+                border: '3px solid lightgrey',
+                padding: '10px',
+                width: '100%',
+                marginTop: '16px',
+              }}
+            >
+              <h2>unHASH reBobs: </h2>
+              <h3>
+                $reBob Balance: {bigintToFloatString(reBobLedgerBalance, 6)}
+              </h3>
+              <BobWithdrawField
+                loading={loading}
+                setLoading={setLoading}
+                reBobLedgerBalance={reBobLedgerBalance}
+                reBobFee={reBobFee}
+                bobFee={bobFee}
+                isConnected={isConnected}
+                reBobActor={reBobActor}
+                reBobCanisterID={reBobCanisterID}
+                cleanUp={cleanUp}
+              />
+            </div> */}
+          <TokenManagement
+            loading={loading}
+            setLoading={setLoading}
+            tokens={[dkpTokenObject, dpwTokenObject]}
+            cleanUp={cleanUp}
+            loggedInPrincipal={loggedInPrincipal}
+            fetchBalances={fetchBalances}
+          />
+        </>
+      ) : (
+        <></>
+      )}
       <div className="egg-section">
         <h2>use karma points</h2>
         <p>

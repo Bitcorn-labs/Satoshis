@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import bigintToFloatString from '../bigIntToFloatString';
 import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
 import { _SERVICE as reBobService } from '../declarations/service_hack/service';
+import TokenObject from '../TokenObject';
 
-interface Token {
-  tokenActor: bobService | reBobService | null;
-  tokenFee: bigint;
-  tokenTicker: string;
-  tokenDecimals: number;
-  tokenLedgerBalance: bigint;
-}
+// interface Token {
+//   tokenActor: bobService | reBobService | null;
+//   tokenFee: bigint;
+//   tokenTicker: string;
+//   tokenDecimals: number;
+//   tokenLedgerBalance: bigint;
+// }
 
 const TokenReceive: React.FC<{
-  activeToken: Token;
+  activeToken: TokenObject;
   loggedInPrincipal: string;
 }> = ({ activeToken, loggedInPrincipal }) => {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
@@ -31,12 +32,12 @@ const TokenReceive: React.FC<{
 
   return (
     <div>
-      <h2>Receive {activeToken.tokenTicker}s:</h2>
+      <h2>Receive {activeToken.ticker}s:</h2>
       <div>{`You have: ${bigintToFloatString(
-        activeToken.tokenLedgerBalance,
-        activeToken.tokenDecimals
-      )} ${activeToken.tokenTicker}s`}</div>
-      <div>{`Send more ${activeToken.tokenTicker}s to:`}</div>
+        activeToken.ledgerBalance,
+        activeToken.decimals
+      )} ${activeToken.ticker}s`}</div>
+      <div>{`Send more ${activeToken.ticker}s to:`}</div>
 
       {/* Copyable loggedInPrincipal */}
       <div

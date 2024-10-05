@@ -5,12 +5,15 @@ import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
 import { useEffect, useRef, useState } from 'react';
 import { AuthClient } from '@dfinity/auth-client';
 import { HttpAgent, Actor, AnonymousIdentity } from '@dfinity/agent';
+import { Principal } from '@dfinity/principal';
+import TokenObject from '../TokenObject';
 
 interface InternetIdentityLoginHandlerProps {
-  bobCanisterID: string;
-  setBobLedgerActor: (value: bobService | null) => void;
-  reBobCanisterID: string;
-  setreBobActor: (value: reBobService | null) => void;
+  // bobCanisterID: string;
+  // setBobLedgerActor: (value: bobService | null) => void;
+  // reBobCanisterID: string;
+  // setreBobActor: (value: reBobService | null) => void;
+  tokens: TokenObject[]; // Array of tokens
   loading: boolean;
   setLoading: (value: boolean) => void;
   isConnected: boolean;
@@ -24,10 +27,11 @@ interface InternetIdentityLoginHandlerProps {
 const InternetIdentityLoginHandler: React.FC<
   InternetIdentityLoginHandlerProps
 > = ({
-  bobCanisterID,
-  setBobLedgerActor,
-  reBobCanisterID,
-  setreBobActor,
+  // bobCanisterID,
+  // setBobLedgerActor,
+  // reBobCanisterID,
+  // setreBobActor,
+  tokens,
   loading,
   setLoading,
   isConnected,
@@ -84,7 +88,10 @@ const InternetIdentityLoginHandler: React.FC<
 
     const identity = authClient.getIdentity();
 
-    setLoggedInPrincipal(identity.getPrincipal().toString());
+    setLoggedInPrincipal(identity.getPrincipal().toString()); // is this necessary anymore?
+    for (const token of tokens) {
+      token.setLoggedInPrincipal(identity.getPrincipal().toString());
+    }
     setIsConnected(true);
     setConnectionType('ii');
     await createAgent();
@@ -132,15 +139,18 @@ const InternetIdentityLoginHandler: React.FC<
       setIsConnected(false);
       setConnectionType('');
       setLoggedInPrincipal('');
-      setreBobActor(null);
-      setBobLedgerActor(null);
+      //setreBobActor(null);
+      //setBobLedgerActor(null);
+      for (const token of tokens) {
+        token.logout();
+      }
       setIdentityProvider(null);
     }
   };
 
   const createAgent = async () => {
     if (!authClient) {
-      console.log('authClientRef was null in createAgent()');
+      console.error('authClientRef was null in createAgent()');
       return;
     }
     const identity = authClient.getIdentity();
@@ -157,23 +167,45 @@ const InternetIdentityLoginHandler: React.FC<
     });
 
     if (process.env.DFX_NETWORK === 'local') {
-      agent.fetchRootKey();
+      await agent.fetchRootKey();
       console.log('aaa');
     }
 
-    setreBobActor(
-      await Actor.createActor(reBobFactory, {
-        agent,
-        canisterId: reBobCanisterID,
-      })
-    );
+    // setreBobActor(
+    //   await Actor.createActor(reBobFactory, {
+    //     agent,
+    //     canisterId: reBobCanisterID,
+    //   })
+    // );
 
-    setBobLedgerActor(
-      await Actor.createActor(icpFactory, {
-        agent,
-        canisterId: bobCanisterID,
-      })
-    );
+    // const myActor = Actor.createActor(icpFactory, {
+    //   agent,
+    //   canisterId: 'bd3sg-teaaa-aaaaa-qaaba-cai',
+    // });
+
+    // console.log('trying');
+
+    // try {
+    //   const response = await myActor.icrc1_balance_of({
+    //     owner: Principal.fromText(loggedInPrincipal),
+    //     subaccount: [],
+    //   });
+
+    //   console.log('!!!', response);
+    // } catch (e) {
+    //   console.log("couldn't do it.", e);
+    // }
+
+    // setBobLedgerActor(
+    //   await Actor.createActor(icpFactory, {
+    //     agent,
+    //     canisterId: bobCanisterID,
+    //   })
+    // );
+
+    for (const token of tokens) {
+      token.setActor('ii', agent);
+    }
   };
 
   return (
