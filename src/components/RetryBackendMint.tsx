@@ -10,7 +10,7 @@
 
 //there can not be a "retry bob withdraw" component.
 
-const RetryReBobMint = () => {
+const RetryBackendMint = () => {
   return (
     <div>
       This component needs to be built to allow people who have approved Bob to
@@ -19,4 +19,4 @@ const RetryReBobMint = () => {
   );
 };
 
-export default RetryReBobMint;
+export default RetryBackendMint;

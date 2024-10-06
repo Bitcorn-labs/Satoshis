@@ -1,31 +1,30 @@
 import { Principal } from '@dfinity/principal';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
-import { InputAdornment, TextField, ThemeProvider } from '@mui/material';
+import { TextField, ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import bigintToFloatString from '../bigIntToFloatString';
 import theme from '../theme';
+import TokenObject from '../TokenObject';
 
 interface TransactionBoxProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
-  tokenActor: bobService | reBobService | null;
-  tokenFee: bigint;
-  tokenTicker: string;
-  tokenDecimals: number;
-  tokenLedgerBalance: bigint;
-  cleanUp: () => void;
+  // tokenActor: bobService | reBobService | null;
+  // tokenFee: bigint;
+  // tokenTicker: string;
+  // tokenDecimals: number;
+  // tokenLedgerBalance: bigint;
+  token: TokenObject;
 }
 
 const TransactionBox: React.FC<TransactionBoxProps> = ({
   loading,
   setLoading,
-  tokenActor,
-  tokenFee,
-  tokenTicker,
-  tokenDecimals,
-  tokenLedgerBalance,
-  cleanUp,
+  // tokenActor,
+  // tokenFee,
+  // tokenTicker,
+  // tokenDecimals,
+  // tokenLedgerBalance,
+  token,
 }) => {
   const [transactionFieldValue, setTransactionFieldValue] =
     useState<string>('');
@@ -43,50 +42,59 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
 
   const [remainder, setRemainder] = useState<string>('');
 
-  const transfer = async (amountInE8s: bigint, toPrincipal: Principal) => {
-    if (!tokenActor) return;
+  const transfer = async (amountInE8s: bigint, toPrincipal: string) => {
+    if (!token.actor) return;
 
     setLoading(true);
 
     console.log({ amountInE8s, toPrincipal });
 
-    try {
-      // Call the token actor's icrc1_transfer function
-      const result = await tokenActor.icrc1_transfer({
-        amount: amountInE8s, // The amount to transfer (must be a bigint)
-        to: {
-          owner: toPrincipal, // The recipient's principal
-          subaccount: [], // Optional, an empty array for no subaccount
-        },
-        fee: [tokenFee], // Optional fee, default is empty
-        memo: [], // Optional memo, default is empty
-        from_subaccount: [], // Optional, if you want to specify a subaccount
-        created_at_time: [BigInt(Date.now()) * 1000000n],
-      });
+    // try {
+    //   // Call the token actor's icrc1_transfer function
+    //   const result = await token.actor.icrc1_transfer({
+    //     amount: amountInE8s, // The amount to transfer (must be a bigint)
+    //     to: {
+    //       owner: toPrincipal, // The recipient's principal
+    //       subaccount: [], // Optional, an empty array for no subaccount
+    //     },
+    //     fee: [token.fee], // Optional fee, default is empty
+    //     memo: [], // Optional memo, default is empty
+    //     from_subaccount: [], // Optional, if you want to specify a subaccount
+    //     created_at_time: [BigInt(Date.now()) * 1000000n],
+    //   });
 
-      console.log({ result });
-      // Handle the result
-      if ('Ok' in result) {
-        console.log(`Transfer successful! Transaction ID: ${result.Ok}`);
-        return result.Ok;
-      } else if ('Err' in result) {
-        console.error('Transfer failed:', result.Err);
-        return result.Err;
-      }
-    } catch (error) {
-      console.error('Error during token transfer:', error);
-      throw error;
-    } finally {
-      cleanUp();
+    //   console.log({ result });
+    //   // Handle the result
+    //   if ('Ok' in result) {
+    //     console.log(`Transfer successful! Transaction ID: ${result.Ok}`);
+    //     return result.Ok;
+    //   } else if ('Err' in result) {
+    //     console.error('Transfer failed:', result.Err);
+    //     return result.Err;
+    //   }
+    // } catch (error) {
+    //   console.error('Error during token transfer:', error);
+    //   throw error;
+    // } finally {
+    //   cleanUp();
+    //   setTransactionFieldValue('');
+    //   setPrincipalField('');
+    // }
+    try {
+      token.transfer(amountInE8s, toPrincipal);
       setTransactionFieldValue('');
       setPrincipalField('');
+    } catch (error) {
+      console.error('An error occurred while trying to transfer tokens', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleTransactionFieldChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const regex = new RegExp(`^\\d*\\.?\\d{0,${tokenDecimals}}$`);
+    const regex = new RegExp(`^\\d*\\.?\\d{0,${token.decimals}}$`);
     const newBobFieldValue = event.target.value;
 
     if (regex.test(newBobFieldValue) || newBobFieldValue === '') {
@@ -95,7 +103,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
   };
 
   useEffect(() => {
-    const decimalMultiplier = 10 ** tokenDecimals;
+    const decimalMultiplier = 10 ** token.decimals;
     const natValue =
       transactionFieldValue && transactionFieldValue !== '.'
         ? BigInt(
@@ -104,30 +112,30 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
         : 0n;
 
     // console.log(bobNatValue);
-    setButtonDisabled(natValue + tokenFee > tokenLedgerBalance);
+    setButtonDisabled(natValue + token.fee > token.ledgerBalance);
 
-    setTextFieldValueTooLow(natValue < tokenFee);
+    setTextFieldValueTooLow(natValue < token.fee);
     setValueFieldErrored(
-      (tokenLedgerBalance < tokenFee && natValue > 0) ||
-        (tokenLedgerBalance >= tokenFee &&
-          natValue + tokenFee > tokenLedgerBalance)
+      (token.ledgerBalance < token.fee && natValue > 0) ||
+        (token.ledgerBalance >= token.fee &&
+          natValue + token.fee > token.ledgerBalance)
     );
     setTransactionFieldNatValue(natValue);
-    if (tokenLedgerBalance - natValue - tokenFee > 0) {
+    if (token.ledgerBalance - natValue - token.fee > 0) {
       setRemainder(
         bigintToFloatString(
-          tokenLedgerBalance - natValue - tokenFee,
-          tokenDecimals
+          token.ledgerBalance - natValue - token.fee,
+          token.decimals
         )
       );
     } else {
       setRemainder('0');
     }
-  }, [transactionFieldValue, tokenLedgerBalance]);
+  }, [transactionFieldValue, token]);
 
   const handleTransaction = () => {
     if (!isValidPrincipal(principalField)) return;
-    transfer(transactionFieldNatValue, Principal.fromText(principalField));
+    transfer(transactionFieldNatValue, principalField);
   };
 
   const handlePrincipalFieldChange = (
@@ -152,7 +160,9 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
 
   const handleMaxClick = () => {
     setTransactionFieldValue(
-      bigintToFloatString(tokenLedgerBalance - tokenFee, tokenDecimals)
+      token.ledgerBalance > token.fee
+        ? bigintToFloatString(token.ledgerBalance - token.fee, token.decimals)
+        : '0'
     );
   };
 
@@ -169,7 +179,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
       >
         <div>
           <div>
-            <div>{`Remaining: ${remainder} ${tokenTicker}s`}</div>
+            <div>{`Remaining: ${remainder} ${token.ticker}s`}</div>
           </div>
           <div style={{ display: 'flex' }}>
             <TextField
@@ -185,17 +195,17 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
             />
 
             <TextField
-              label={tokenTicker}
+              label={token.ticker}
               variant="filled"
               value={transactionFieldValue}
               onChange={handleTransactionFieldChange}
               helperText={
                 buttonDisabled
-                  ? `You don't have enough ${tokenTicker}!`
+                  ? `You don't have enough ${token.ticker}!`
                   : textFieldValueTooLow
                   ? `You must input at least ${bigintToFloatString(
-                      tokenFee,
-                      tokenDecimals
+                      token.fee,
+                      token.decimals
                     )} to transfer.`
                   : ''
               }

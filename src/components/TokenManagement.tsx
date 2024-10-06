@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import TransactionBox from './TransactionBox';
 import TokenReceive from './TokenReceive';
-
-interface Token {
-  tokenActor: bobService | reBobService | null;
-  tokenFee: bigint;
-  tokenTicker: string;
-  tokenDecimals: number;
-  tokenLedgerBalance: bigint;
-}
+import TokenObject from '../TokenObject';
 
 interface TokenManagementProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
-  tokens: Token[]; // Array of tokens
-  cleanUp: () => void;
+  tokens: TokenObject[]; // Array of tokens
   loggedInPrincipal: string;
   fetchBalances: () => void;
 }
@@ -25,7 +15,6 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
   loading,
   setLoading,
   tokens,
-  cleanUp,
   loggedInPrincipal,
   fetchBalances,
 }) => {
@@ -42,17 +31,12 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
           activeToken={activeToken}
           loggedInPrincipal={loggedInPrincipal}
         />
-        <h2>Send {activeToken.tokenTicker}s:</h2>
+        <h2>Send {activeToken.ticker}s:</h2>
         <TransactionBox
           key={activeTab}
           loading={loading}
           setLoading={setLoading}
-          tokenActor={activeToken.tokenActor}
-          tokenFee={activeToken.tokenFee}
-          tokenTicker={activeToken.tokenTicker}
-          tokenDecimals={activeToken.tokenDecimals}
-          tokenLedgerBalance={activeToken.tokenLedgerBalance}
-          cleanUp={cleanUp}
+          token={activeToken}
         />
       </div>
     );
@@ -84,7 +68,7 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
               width: '50%',
             }}
           >
-            {index === 0 ? `$${token.tokenTicker}` : `$${token.tokenTicker}`}
+            {index === 0 ? `$${token.ticker}` : `$${token.ticker}`} {/*lol?*/}
           </button>
         ))}
       </div>

@@ -1,16 +1,10 @@
-import { idlFactory as reBobFactory } from '../declarations/backend';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service'; // changed to service.d because dfx generate would remove the export line from index.d
-import { idlFactory as icpFactory } from '../declarations/nns-ledger';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
 import { useEffect, useRef, useState } from 'react';
 import { AuthClient } from '@dfinity/auth-client';
-import { HttpAgent, Actor, AnonymousIdentity } from '@dfinity/agent';
+import { HttpAgent } from '@dfinity/agent';
+import TokenObject from '../TokenObject';
 
 interface InternetIdentityLoginHandlerProps {
-  bobCanisterID: string;
-  setBobLedgerActor: (value: bobService | null) => void;
-  reBobCanisterID: string;
-  setreBobActor: (value: reBobService | null) => void;
+  tokens: TokenObject[]; // Array of tokens
   loading: boolean;
   setLoading: (value: boolean) => void;
   isConnected: boolean;
@@ -24,10 +18,7 @@ interface InternetIdentityLoginHandlerProps {
 const InternetIdentityLoginHandler: React.FC<
   InternetIdentityLoginHandlerProps
 > = ({
-  bobCanisterID,
-  setBobLedgerActor,
-  reBobCanisterID,
-  setreBobActor,
+  tokens,
   loading,
   setLoading,
   isConnected,
@@ -79,16 +70,27 @@ const InternetIdentityLoginHandler: React.FC<
   const login = async () => {
     setLoading(true);
     await authClientLogin();
+    setupLoggedInVars();
 
+    setLoading(false);
+  };
+
+  const setupLoggedInVars = async () => {
     if (!authClient) return;
 
     const identity = authClient.getIdentity();
 
-    setLoggedInPrincipal(identity.getPrincipal().toString());
+    const myPrincipal = identity.getPrincipal().toString();
+
+    console.log(myPrincipal);
+
+    setLoggedInPrincipal(myPrincipal); // is this necessary anymore?
+    for (const token of tokens) {
+      token.setLoggedInPrincipal(myPrincipal);
+    }
     setIsConnected(true);
     setConnectionType('ii');
     await createAgent();
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -106,17 +108,11 @@ const InternetIdentityLoginHandler: React.FC<
   }, []);
 
   const checkLoggedIn = async () => {
+    if (!isConnected || connectionType !== 'ii') return;
     if (!authClient) return;
 
     const authenticated = await authClient.isAuthenticated();
-    if (authenticated) {
-      const identity = authClient.getIdentity();
-
-      setLoggedInPrincipal(identity.getPrincipal().toString());
-      setIsConnected(true);
-      setConnectionType('ii');
-      await createAgent();
-    }
+    if (authenticated) setupLoggedInVars();
   };
 
   useEffect(() => {
@@ -132,15 +128,16 @@ const InternetIdentityLoginHandler: React.FC<
       setIsConnected(false);
       setConnectionType('');
       setLoggedInPrincipal('');
-      setreBobActor(null);
-      setBobLedgerActor(null);
+      for (const token of tokens) {
+        token.logout();
+      }
       setIdentityProvider(null);
     }
   };
 
   const createAgent = async () => {
     if (!authClient) {
-      console.log('authClientRef was null in createAgent()');
+      console.error('authClientRef was null in createAgent()');
       return;
     }
     const identity = authClient.getIdentity();
@@ -157,23 +154,13 @@ const InternetIdentityLoginHandler: React.FC<
     });
 
     if (process.env.DFX_NETWORK === 'local') {
-      agent.fetchRootKey();
+      await agent.fetchRootKey();
       console.log('aaa');
     }
 
-    setreBobActor(
-      await Actor.createActor(reBobFactory, {
-        agent,
-        canisterId: reBobCanisterID,
-      })
-    );
-
-    setBobLedgerActor(
-      await Actor.createActor(icpFactory, {
-        agent,
-        canisterId: bobCanisterID,
-      })
-    );
+    for (const token of tokens) {
+      token.setActor('ii', agent);
+    }
   };
 
   return (

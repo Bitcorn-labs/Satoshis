@@ -12,17 +12,31 @@ fi
 dfx identity use $ACCOUNT1
 
 # Mint tokens
-dfx canister call fakebob mint_tokens
+dfx canister call $PRIMARY_CANISTER mint_tokens
 
 # Transfer tokens to the stored principal
-dfx canister call fakebob icrc1_transfer "(record {
+dfx canister call $PRIMARY_CANISTER icrc1_transfer "(record {
     to = record { 
-        owner = principal \"$STORED_PRINCIPAL\"; 
+        owner = principal \"$PLUG_PRINCIPAL\"; 
         subaccount = null 
     }; 
-    fee = opt 1_000_000; 
+    fee = opt 100_000; 
     memo = opt blob \"\"; 
-    amount = 1_900_000_000
+    amount = 800_000_0000_0000
+})"
+
+# Mint tokens
+dfx canister call $PRIMARY_CANISTER mint_tokens
+
+# Transfer tokens to the stored principal
+dfx canister call $PRIMARY_CANISTER icrc1_transfer "(record {
+    to = record { 
+        owner = principal \"$INTERNET_IDENTITY_PRINCIPAL\"; 
+        subaccount = null 
+    }; 
+    fee = opt 100_000; 
+    memo = opt blob \"\"; 
+    amount = 800_000_0000_0000
 })"
 
 # Switch to account2 identity
