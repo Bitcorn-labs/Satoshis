@@ -26,8 +26,8 @@ function App() {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [connectionType, setConnectionType] = useState<string>('');
 
-  const [totalBobHeld, setTotalBobHeld] = useState<string>('');
-  const [totalReBobMinted, setTotalReBobMinted] = useState<string>('');
+  const [totalInputTokenHeld, setTotalInputTokenHeld] = useState<string>('');
+  // const [totalReBobMinted, setTotalReBobMinted] = useState<string>('');
 
   const [loggedInPrincipal, setLoggedInPrincipal] = useState('');
 
@@ -77,14 +77,20 @@ function App() {
     //   subaccount: [],
     // }); // Can't use plug actors as anonymous.
     // We will use the internet identity anonymous calls in the next update. ic0 will work for now.
-    //const bobIcActor = await ic('7pail-xaaaa-aaaas-aabmq-cai'); // hard coding this because it will work in local still.
-    // const totalBobHeldResponse = await bobIcActor.call('icrc1_balance_of', {
-    //   owner: Principal.fromText('qvwlv-uyaaa-aaaas-aidpq-cai'), // hard coding this because it won't work with local of reBobCanisterID
-    //   subaccount: [],
-    // });
+    if (process.env.DFX_NETWORK === 'local') return;
+    const inputIcActor = await ic('7pail-xaaaa-aaaas-aabmq-cai'); // hard coding this because it will work in local still.
+    const totalInputTokenResponse = await inputIcActor.call(
+      'icrc1_balance_of',
+      {
+        owner: Principal.fromText(outputTokenObject.canisterId), // hard coding this because it won't work with local of reBobCanisterID
+        subaccount: [],
+      }
+    );
     // //const totalReBobMintedResponse = await reBobActor.icrc1_total_supply();
-    // setTotalBobHeld(bigintToFloatString(totalBobHeldResponse, 8));
-    //setTotalReBobMinted(bigintToFloatString(totalReBobMintedResponse));
+    setTotalInputTokenHeld(
+      bigintToFloatString(totalInputTokenResponse, inputTokenObject.decimals)
+    );
+    // setTotalReBobMinted(bigintToFloatString(totalReBobMintedResponse));
   };
 
   useEffect(() => {
@@ -187,16 +193,6 @@ function App() {
         loggedInPrincipal={loggedInPrincipal}
         setLoggedInPrincipal={setLoggedInPrincipal}
       />
-      <button
-        onClick={() => {
-          console.log(inputTokenObject);
-
-          inputTokenObject.getLedgerBalance();
-          outputTokenObject.getLedgerBalance();
-        }}
-      >
-        clickme
-      </button>
       {isConnected ? (
         <>
           <div
@@ -217,8 +213,6 @@ function App() {
               loading={loading}
               setLoading={setLoading}
               isConnected={isConnected}
-              // cleanUp={cleanUp}
-              //minimumTransactionAmount={3000000n}
             />
 
             <p></p>
