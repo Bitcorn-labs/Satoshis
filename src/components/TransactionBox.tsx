@@ -1,7 +1,5 @@
 import { Principal } from '@dfinity/principal';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
-import { InputAdornment, TextField, ThemeProvider } from '@mui/material';
+import { TextField, ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import bigintToFloatString from '../bigIntToFloatString';
 import theme from '../theme';
@@ -16,7 +14,6 @@ interface TransactionBoxProps {
   // tokenDecimals: number;
   // tokenLedgerBalance: bigint;
   token: TokenObject;
-  cleanUp: () => void;
 }
 
 const TransactionBox: React.FC<TransactionBoxProps> = ({
@@ -28,7 +25,6 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
   // tokenDecimals,
   // tokenLedgerBalance,
   token,
-  cleanUp,
 }) => {
   const [transactionFieldValue, setTransactionFieldValue] =
     useState<string>('');
@@ -91,6 +87,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     } catch (error) {
       console.error('An error occurred while trying to transfer tokens', error);
     } finally {
+      setLoading(false);
     }
   };
 

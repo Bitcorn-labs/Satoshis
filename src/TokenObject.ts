@@ -1,8 +1,8 @@
 import { HttpAgent, Actor } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
-import { idlFactory as icpFactory } from './declarations/nns-ledger';
+// import { idlFactory as icpFactory } from './declarations/nns-ledger';
 import { idlFactory as backendFactory } from './declarations/backend';
-import { _SERVICE as bobService } from './declarations/nns-ledger';
+// import { _SERVICE as bobService } from './declarations/nns-ledger';
 import { _SERVICE as reBobService } from './declarations/service_hack/service';
 
 interface TokenObjectParams {
@@ -94,7 +94,9 @@ class TokenObject {
         memo: [],
         fee: [this.fee],
         created_at_time: [BigInt(Date.now()) * 1000000n],
-        expires_at: [],
+        expires_at: [
+          BigInt(Date.now()) * 1000000n + 60n * 60n * 1000n * 1000000n,
+        ], //1 hour approval
         expected_allowance: [],
         from_subaccount: [],
       });
@@ -132,6 +134,26 @@ class TokenObject {
       }
     } catch (error) {
       console.error(`Error occurred when depositing ${this.ticker}:`, error);
+      return false;
+    }
+  }
+
+  async withdraw(amountInE8s: bigint): Promise<boolean> {
+    if (!this.actor) return false;
+
+    console.log({ amountInE8s });
+
+    try {
+      const result = await this.actor.withdraw([], amountInE8s);
+
+      if ('ok' in result) {
+        return true;
+      } else {
+        console.error(`Failed to burn ${this.ticker}:`, result.err.toString());
+        return false;
+      }
+    } catch (error) {
+      console.error(`Burning ${this.ticker} failed:`, error);
       return false;
     }
   }
@@ -183,8 +205,8 @@ class TokenObject {
         canisterId: this.canisterId,
       });
     }
-
-    this.refresh();
+    this.getLedgerBalance();
+    //this.refresh();
   }
 
   async setLoggedInPrincipal(principal: string): Promise<void> {

@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import TransactionBox from './TransactionBox';
 import TokenReceive from './TokenReceive';
 import TokenObject from '../TokenObject';
-
-// interface Token {
-//   tokenActor: bobService | reBobService | null;
-//   tokenFee: bigint;
-//   tokenTicker: string;
-//   tokenDecimals: number;
-//   tokenLedgerBalance: bigint;
-// }
 
 interface TokenManagementProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
   tokens: TokenObject[]; // Array of tokens
-  cleanUp: () => void;
   loggedInPrincipal: string;
   fetchBalances: () => void;
 }
@@ -26,7 +15,6 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
   loading,
   setLoading,
   tokens,
-  cleanUp,
   loggedInPrincipal,
   fetchBalances,
 }) => {
@@ -48,13 +36,7 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
           key={activeTab}
           loading={loading}
           setLoading={setLoading}
-          // tokenActor={activeToken.actor}
-          // tokenFee={activeToken.tokenFee}
-          // tokenTicker={activeToken.tokenTicker}
-          // tokenDecimals={activeToken.tokenDecimals}
-          // tokenLedgerBalance={activeToken.tokenLedgerBalance}
           token={activeToken}
-          cleanUp={cleanUp}
         />
       </div>
     );

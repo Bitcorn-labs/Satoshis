@@ -14,13 +14,7 @@ interface BackendMintingFieldProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
   isConnected: boolean;
-  // cleanUp: () => void;
-  minimumTransactionAmount: bigint;
-  // bobLedgerBalance: bigint;
-  // bobFee: bigint;
-  // reBobCanisterID: string;
-  // bobLedgerActor: bobService | null;
-  // reBobActor: reBobService | null;
+  // minimumTransactionAmount: bigint;
 }
 
 const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
@@ -29,13 +23,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   loading,
   setLoading,
   isConnected,
-  // cleanUp,
-  minimumTransactionAmount,
-  // bobLedgerBalance,
-  // bobFee,
-  // reBobCanisterID,
-  // bobLedgerActor,
-  // reBobActor,
+  // minimumTransactionAmount,
 }) => {
   const [inputFieldValue, setInputFieldValue] = useState<string>('');
   const [inputFieldNatValue, setInputFieldNatValue] = useState<bigint>(0n);
@@ -45,10 +33,12 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
+  const minimumTransactionAmount: bigint = inputToken.fee * 4n;
+
   const handleInputFieldChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const regex = /^\d*\.?\d{0,8}$/; // Regex to allow numbers with up to 8 decimal places
+    const regex = new RegExp(`^\\d*\\.?\\d{0,${inputToken.decimals}}$`); ///^\d*\.?\d{0,8}$/; // Regex to allow numbers with up to 8 decimal places
     const newInputFieldValue = event.target.value;
 
     if (regex.test(newInputFieldValue) || newInputFieldValue === '') {
@@ -82,7 +72,8 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
     );
 
     if (!approvalResult) {
-      // cleanUp();
+      inputToken.getLedgerBalance();
+      outputToken.getLedgerBalance();
       setLoading(false);
       return;
     }
@@ -93,7 +84,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
       addStatus(`${inputToken.ticker} was approved, but was not transferred.`);
     }
 
-    // cleanUp();
+    console.log('getting new ledger balances. (minting)');
     inputToken.getLedgerBalance();
     outputToken.getLedgerBalance();
     setLoading(false);
@@ -105,9 +96,10 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
     if (!inputToken.actor) return false;
 
     addStatus(
-      `Requesting to approve ${bigintToFloatString(amountInE8s, 8)} ${
-        inputToken.ticker
-      }.`
+      `Requesting to approve ${bigintToFloatString(
+        amountInE8s,
+        inputToken.decimals
+      )} ${inputToken.ticker}.`
     );
 
     const result = await inputToken.approve(
@@ -117,47 +109,15 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
 
     if (result) {
       addStatus(
-        `${bigintToFloatString(amountInE8s, 8)} ${
+        `${bigintToFloatString(amountInE8s, inputToken.decimals)} ${
           inputToken.ticker
         } approved for transfer!`
       );
       return true;
     } else {
       addStatus(`${inputToken.ticker} was not approved for transfer.`);
+      return false;
     }
-
-    // try {
-    //   const approvalResult = await bobLedgerActor.icrc2_approve({
-    //     amount: amountInE8s, // Approve amount and the fee to send bob back during icrc2_transfer_from() in deposit() function
-    //     // Adjust with your canister ID and parameters
-    //     spender: {
-    //       owner: await Principal.fromText(reBobCanisterID),
-    //       subaccount: [],
-    //     },
-    //     memo: [],
-    //     fee: [bobFee],
-    //     created_at_time: [BigInt(Date.now()) * 1000000n],
-    //     expires_at: [],
-    //     expected_allowance: [],
-    //     from_subaccount: [],
-    //   });
-
-    //   if ('Ok' in approvalResult) {
-    //     addStatus(
-    //       `${bigintToFloatString(amountInE8s, 8)} Bob approved for transfer!`
-    //     );
-    //     return true;
-    //   } else {
-    //     addStatus('Bob was not approved for transfer.');
-    //     return false;
-    //   }
-    // } catch (error) {
-    //   console.error('Error occurred when approving Bob:', error);
-    //   addStatus(
-    //     "Error occurred when approving Bob (Check your web browser's console)"
-    //   );
-    //   return false;
-    // }
   };
 
   const backendDeposit = async (amountInE8s: bigint): Promise<boolean> => {
@@ -169,52 +129,18 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
 
     if (result) {
       addStatus(
-        `Successfully swapped ${bigintToFloatString(amountInE8s, 8)} ${
-          inputToken.ticker
-        }!`
+        `Successfully swapped ${bigintToFloatString(
+          amountInE8s,
+          inputToken.decimals
+        )} ${inputToken.ticker}!`
       );
       return true;
     } else {
       addStatus(
-        "Failed to deposit Bob to the reBob hasher (Check your web browser's console)"
+        `Failed to deposit ${inputToken.ticker} to the backend (Check your web browser's console)`
       );
       return false;
     }
-
-    // try {
-    //   addStatus(
-    //     `Depositing ${bigintToFloatString(amountInE8s, 8)} Bob to mint reBob.`
-    //   );
-    //   const result = await reBobActor.deposit([], amountInE8s);
-
-    //   if ('ok' in result) {
-    //     addStatus(
-    //       `Swapped ${bigintToFloatString(
-    //         amountInE8s,
-    //         8
-    //       )} Bob for ${bigintToFloatString(
-    //         amountInE8s,
-    //         6
-    //       )} reBob! Bob transferred on block ${result.ok[0].toString()}. ReBob minted on block ${result.ok[1].toString()}.`
-    //     );
-    //     return true;
-    //   } else {
-    //     addStatus(
-    //       "Failed to deposit Bob to the reBob hasher (Check your web browser's console)"
-    //     );
-    //     console.error(
-    //       'Failed to deposit Bob to the reBob hasher: ',
-    //       result.err.toString()
-    //     );
-    //     return false;
-    //   }
-    // } catch (error) {
-    //   console.error('Failed when depositing Bob to the reBob hasher:', error);
-    //   addStatus(
-    //     "Failed when depositing Bob to the reBob hasher (Check your web browser's console)"
-    //   );
-    //   return false;
-    // }
   };
 
   const addStatus = (inputText: string) => {
@@ -224,7 +150,11 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   useEffect(() => {
     const inputNatValue =
       inputFieldValue && inputFieldValue !== '.'
-        ? BigInt((parseFloat(inputFieldValue) * 1_0000_0000).toFixed(0)) // Convert to Nat
+        ? BigInt(
+            (
+              parseFloat(inputFieldValue) * Math.pow(10, inputToken.decimals)
+            ).toFixed(0) // Convert based on decimals
+          )
         : 0n;
 
     // console.log(bobNatValue);
@@ -248,7 +178,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
           <div>
             {`You need at least ${bigintToFloatString(
               minimumTransactionAmount,
-              8
+              inputToken.decimals
             )} $${inputToken.ticker} to swap to $${outputToken.ticker}`}
           </div>
         </>
@@ -274,7 +204,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
                 : textFieldValueTooLow
                 ? `You must input at least ${bigintToFloatString(
                     minimumTransactionAmount,
-                    8
+                    inputToken.decimals
                   )} ${inputToken.ticker} to swap.`
                 : ''
             }

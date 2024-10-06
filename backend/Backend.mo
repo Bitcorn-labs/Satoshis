@@ -37,8 +37,9 @@ shared ({ caller = _owner }) actor class Token(
   let Map = ICRC1.Map;
 
   //let ICPLedger : ICPTypes.Service = actor ("ryjl3-tyaaa-aaaaa-aaaba-cai");
-  //let DKPLedger : ICPTypes.Service = actor ("zfcdd-tqaaa-aaaaq-aaaga-cai");
-  let DKPLedger : ICPTypes.Service = actor ("bd3sg-teaaa-aaaaa-qaaba-cai"); // Use zfcdd-tqaaa-aaaaq-aaaga-cai for ic0
+  //let DKPLedger : ICPTypes.Service = actor ("zfcdd-tqaaa-aaaaq-aaaga-cai"); //ic0
+  // let backendCanisterID : String = "hjfd4-eqaaa-aaaam-adkmq-cai"; // ic0
+  let DKPLedger : ICPTypes.Service = actor ("bd3sg-teaaa-aaaaa-qaaba-cai"); // local
 
   type Account = ICRC1.Account;
 
@@ -534,7 +535,7 @@ shared ({ caller = _owner }) actor class Token(
   public shared ({ caller }) func withdraw(subaccount : ?[Nat8], amount : Nat) : async Result.Result<(Nat, Nat), Text> {
     log.add(debug_show (Time.now()) # "trying withdraw " # debug_show (subaccount));
 
-    if (amount <= settings.dkp_fee_d12) {
+    if (amount <= (settings.dpw_fee_d12 * 2)) {
       // Accounting for sending dkp to the user from this canister. We pay the fee.
       return #err("amount too low");
     };
@@ -558,7 +559,7 @@ shared ({ caller = _owner }) actor class Token(
     };
 
     //let old_balance_d8 : T.Balance = Int.abs(old_balance_d12 / settings.d8_to_d12); // from sneed swap
-    let returnAmount = Int.abs((amount - settings.dkp_fee_d12) * settings.conversion_factor / settings.d8_to_d12); // hope this work
+    let returnAmount = Int.abs((amount - settings.dpw_fee_d12) * settings.conversion_factor / settings.d8_to_d12); // hope this work
 
     let result = try {
       await DKPLedger.icrc1_transfer({
@@ -665,7 +666,7 @@ shared ({ caller = _owner }) actor class Token(
         case (?val) val;
       };
       let maxSearch = switch (max) {
-        case (null) 20_000_000_0000_0000; //our max supply is far less than 20M
+        case (null) 10_000_0000_0000_0000; //our max supply is far less than 10k
         case (?val) val;
       };
       if (thisAccount.1 >= minSearch and thisAccount.1 <= maxSearch) ICRC1.Vector.add(results, (thisAccount.0, thisAccount.1));

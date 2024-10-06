@@ -3,42 +3,35 @@ import { TextField, ThemeProvider } from '@mui/material';
 import theme from '../theme';
 import bigintToFloatString from '../bigIntToFloatString';
 import { Principal } from '@dfinity/principal';
-import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
+// import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
+// import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import ShowTransactionStatus from './ShowTransactionStatus';
+import TokenObject from '../TokenObject';
 
 interface BackendWithdrawFieldProps {
+  inputToken: TokenObject;
+  outputToken: TokenObject;
   loading: boolean;
   setLoading: (value: boolean) => void;
-  reBobLedgerBalance: bigint;
-  reBobFee: bigint;
-  bobFee: bigint;
   isConnected: boolean;
-  reBobActor: reBobService | null;
-  reBobCanisterID: string;
-  cleanUp: () => void;
 }
 
 const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
+  inputToken,
+  outputToken,
   loading,
   setLoading,
-  reBobLedgerBalance,
-  bobFee,
-  reBobFee,
   isConnected,
-  reBobActor,
-  reBobCanisterID,
-  cleanUp,
 }) => {
-  const [reBobFieldValue, setReBobFieldValue] = useState<string>('');
+  const [outputFieldValue, setOutputFieldValue] = useState<string>('');
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [textFieldErrored, setTextFieldErrored] = useState<boolean>(false);
-  const [reBobFieldNatValue, setReBobFieldNatValue] = useState<bigint>(0n);
+  const [outputFieldNatValue, setOutputFieldNatValue] = useState<bigint>(0n);
   const [statusArray, setStatusArray] = useState<string[]>(['']);
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
-  const minimumTransactionAmount: bigint = 1_100_000n;
+  const minimumTransactionAmount: bigint = outputToken.fee * 4n;
 
   const handleWithdrawl = async () => {
     if (!isConnected) {
@@ -47,132 +40,100 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
     }
 
     if (
-      reBobFieldNatValue + bobFee + reBobFee > reBobLedgerBalance ||
-      reBobLedgerBalance < minimumTransactionAmount
+      outputFieldNatValue + inputToken.fee + outputToken.fee >
+        outputToken.ledgerBalance ||
+      outputToken.ledgerBalance < minimumTransactionAmount
     ) {
       // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
-      addStatus('You do not have enough reBob.');
+      addStatus(`You do not have enough ${outputToken.ticker}.`);
       return;
     }
 
-    if (!reBobActor) {
-      addStatus('reBob actor not loaded!');
+    if (!outputToken.actor) {
+      addStatus(`${outputToken.ticker} actor not loaded!`);
       return;
     }
 
     setLoading(true);
 
     // This step isn't needed.
-    const approvalResult = await approveReBob(
-      reBobFieldNatValue + bobFee + reBobFee
+    const approvalResult = await approveOutputToken(
+      outputFieldNatValue + inputToken.fee + outputToken.fee
     );
 
     if (!approvalResult) {
-      await cleanUp();
+      inputToken.getLedgerBalance();
+      outputToken.getLedgerBalance();
+      setLoading(false);
       return;
     }
 
-    const result = await bobWithdraw(reBobFieldNatValue + bobFee);
+    const result = await backendWithdraw(outputFieldNatValue + inputToken.fee);
 
     if (!result) {
-      addStatus('reBob was approved, but was not transferred.');
+      addStatus(`${outputToken.ticker} was approved, but was not transferred.`);
     }
 
-    await cleanUp();
-    setReBobFieldNatValue(0n);
-    setReBobFieldValue('');
+    console.log('getting new ledger balances. (withdraw)');
+    inputToken.getLedgerBalance();
+    outputToken.getLedgerBalance();
+    setLoading(false);
+    setOutputFieldNatValue(0n);
+    setOutputFieldValue('');
   };
 
-  const approveReBob = async (amountInE8s: bigint) => {
-    if (!reBobActor) return false;
+  const approveOutputToken = async (amountInE8s: bigint) => {
+    if (!outputToken.actor) return false;
 
     addStatus(
-      `Requesting to approve ${bigintToFloatString(amountInE8s, 6)} reBob.`
+      `Requesting to approve ${bigintToFloatString(
+        amountInE8s,
+        outputToken.decimals
+      )} ${outputToken.ticker}.`
     );
 
-    console.log('before');
+    const result = await outputToken.approve(
+      amountInE8s,
+      outputToken.canisterId
+    );
 
-    try {
-      const approvalResult = await reBobActor.icrc2_approve({
-        amount: amountInE8s, // Cover the fee of sending the bob back to the user.
-        // Adjust with your canister ID and parameters
-        spender: {
-          owner: await Principal.fromText(reBobCanisterID),
-          subaccount: [],
-        },
-        memo: [],
-        fee: [reBobFee],
-        created_at_time: [BigInt(Date.now()) * 1000000n],
-        expires_at: [
-          BigInt(Date.now()) * 1000000n + 5n * 60n * 1000n * 1000000n,
-        ], // 5 minute approval.
-        expected_allowance: [],
-        from_subaccount: [],
-      });
-
-      console.log('after');
-
-      console.log({ approvalResult });
-
-      if ('Ok' in approvalResult) {
-        addStatus(
-          `${bigintToFloatString(amountInE8s, 6)} reBob approved for transfer!`
-        );
-        return true;
-      } else {
-        addStatus('reBob was not approved for transfer.');
-        return false;
-      }
-    } catch (error) {
-      console.error('Error occurred when approving reBob: ', error);
+    if (result) {
       addStatus(
-        "Error occurred when approving reBob (Check your web browser's console)"
+        `${bigintToFloatString(amountInE8s, outputToken.decimals)} ${
+          outputToken.ticker
+        } approved for transfer!`
       );
+      return true;
+    } else {
+      addStatus(`${outputToken.ticker} was not approved for transfer.`);
+      return false;
     }
-    return false;
   };
 
-  const bobWithdraw = async (amountInE8s: bigint) => {
-    if (!reBobActor) {
+  const backendWithdraw = async (amountInE8s: bigint): Promise<boolean> => {
+    if (!outputToken.actor) {
       return false;
     }
 
-    try {
+    addStatus(
+      `Depositing ${bigintToFloatString(amountInE8s, outputToken.decimals)} ${
+        outputToken.ticker
+      } to burn for ${inputToken.ticker}.`
+    );
+
+    const result = await outputToken.withdraw(amountInE8s);
+
+    if (result) {
       addStatus(
-        `Depositing ${bigintToFloatString(
+        `Successfully swapped ${bigintToFloatString(
           amountInE8s,
-          6
-        )} reBob to burn for Bob.`
+          outputToken.decimals
+        )} ${outputToken.ticker}!`
       );
-      const result = await reBobActor.withdraw([], amountInE8s);
-      if ('ok' in result) {
-        addStatus("Bob's your uncle.");
-        addStatus(
-          `Swapped ${bigintToFloatString(
-            amountInE8s,
-            6
-          )} reBob for ${bigintToFloatString(
-            amountInE8s,
-            8
-          )} Bob! reBob burned on block ${
-            result.ok[0]
-          }. Bob transferred on block ${result.ok[1]}`
-        );
-        return true;
-      } else {
-        addStatus(
-          "failed to burn reBob and return Bob (Check your web browser's console)"
-        );
-        console.error(
-          'failed to burn reBob and return Bob',
-          result.err.toString()
-        );
-        return false;
-      }
-    } catch (error) {
-      console.error('Burning reBob and returning Bob failed:', error);
+      return true;
+    } else {
       addStatus(
-        "Burning reBob and returning Bob failed (Check your web browser's console)"
+        `Failed to withdraw ${inputToken.ticker} from the backend (Check your web browser's console)`
       );
       return false;
     }
@@ -182,42 +143,51 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
     setStatusArray((prevArray) => [inputText, ...prevArray]);
   };
 
-  const handleBobFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const regex = /^\d*\.?\d{0,6}$/; // Regex to allow numbers with up to 8 decimal places
-    const newBobFieldValue = event.target.value;
+  const handleOutputFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const regex = new RegExp(`^\\d*\\.?\\d{0,${outputToken.decimals}}$`); ///^\d*\.?\d{0,6}$/; // Regex to allow numbers with up to 8 decimal places
+    const newOutputFieldValue = event.target.value;
 
-    if (regex.test(newBobFieldValue) || newBobFieldValue === '') {
-      setReBobFieldValue(newBobFieldValue);
+    if (regex.test(newOutputFieldValue) || newOutputFieldValue === '') {
+      setOutputFieldValue(newOutputFieldValue);
     }
   };
 
   useEffect(() => {
-    const reBobNatValue =
-      reBobFieldValue && reBobFieldValue !== '.'
-        ? BigInt((parseFloat(reBobFieldValue) * 1_000_000).toFixed(0)) // Convert to Nat
+    const outputNatValue =
+      outputFieldValue && outputFieldValue !== '.'
+        ? BigInt(
+            (
+              parseFloat(outputFieldValue) * Math.pow(10, outputToken.decimals)
+            ).toFixed(0) // Convert based on decimals
+          )
         : 0n;
 
     // console.log(bobNatValue);
-    setButtonDisabled(reBobNatValue + bobFee + reBobFee > reBobLedgerBalance);
-    setTextFieldValueTooLow(reBobNatValue < minimumTransactionAmount);
-    setTextFieldErrored(
-      (reBobLedgerBalance < minimumTransactionAmount && reBobNatValue > 0) ||
-        (reBobLedgerBalance >= minimumTransactionAmount &&
-          reBobNatValue + bobFee + reBobFee > reBobLedgerBalance)
+    setButtonDisabled(
+      outputNatValue + outputToken.fee * 2n > outputToken.ledgerBalance
     );
-    setReBobFieldNatValue(reBobNatValue);
-  }, [reBobFieldValue, reBobLedgerBalance]);
+    setTextFieldValueTooLow(outputNatValue < minimumTransactionAmount);
+    setTextFieldErrored(
+      (outputToken.ledgerBalance < minimumTransactionAmount &&
+        outputNatValue > 0) ||
+        (outputToken.ledgerBalance >= minimumTransactionAmount &&
+          outputNatValue + outputToken.fee * 2n > outputToken.ledgerBalance)
+    );
+    setOutputFieldNatValue(outputNatValue);
+  }, [outputFieldValue, outputToken]);
 
   return (
     <ThemeProvider theme={theme}>
-      {reBobLedgerBalance < minimumTransactionAmount ? (
+      {outputToken.ledgerBalance < minimumTransactionAmount ? (
         <>
           <div>
             {`You need at least ${bigintToFloatString(
               minimumTransactionAmount,
-              6
+              outputToken.decimals
             )}
-            $reBob to unHASH to Bob`}
+            $${outputToken.ticker} to swap to $${inputToken.ticker}`}
           </div>
         </>
       ) : (
@@ -233,18 +203,18 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
       >
         <div>
           <TextField
-            label="reBob"
+            label={`${outputToken.ticker}`}
             variant="filled"
-            value={reBobFieldValue}
-            onChange={handleBobFieldChange}
+            value={outputFieldValue}
+            onChange={handleOutputFieldChange}
             helperText={
               buttonDisabled
-                ? "You don't have enough reBob!"
+                ? `You don't have enough ${outputToken.ticker}!`
                 : textFieldValueTooLow
                 ? `You must input at least ${bigintToFloatString(
                     minimumTransactionAmount,
-                    6
-                  )} to swap.`
+                    outputToken.decimals
+                  )} ${outputToken.ticker} to swap.`
                 : ''
             }
             error={textFieldErrored}
@@ -269,7 +239,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
               justifyContent: 'center',
             }}
           >
-            {'Return to Bobs'}
+            {`Return to ${inputToken.ticker}s`}
           </button>
         </div>
       </div>
