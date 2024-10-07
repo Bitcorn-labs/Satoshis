@@ -9,7 +9,7 @@ const CharacterSelection = () => {
   );
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(
     null
-  ); // State to manage selected character
+  ); // State to manage selected character test
   const [showModal, setShowModal] = useState<boolean>(true);
   const [showStartGameButton, setShowStartGameButton] =
     useState<boolean>(false);
