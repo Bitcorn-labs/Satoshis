@@ -12,6 +12,8 @@ import GroupPhoto from './components/GroupPhoto';
 import TokenObject from './TokenObject';
 import BackendMintingField from './components/BackendMintingField';
 import BackendWithdrawField from './components/BackendWithdrawField';
+import CharacterSelection from './game/CharacterSelection';
+import Game from './game/Game';
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -252,6 +254,7 @@ function App() {
       ) : (
         <></>
       )}
+      <CharacterSelection />
       <div className="egg-section">
         <h2>use karma points</h2>
         <p>
@@ -261,7 +264,7 @@ function App() {
         <button id="sendEggButton">deposit dkp in the dragons keep</button>
       </div>
       {/* <!--------------------------------ACTION--> */}
-      <GroupPhoto />
+      {/* <GroupPhoto /> */}
       <p className="read-the-docs">
         Bitcorn Labs presents: Dragon Paladin Wizard
       </p>
