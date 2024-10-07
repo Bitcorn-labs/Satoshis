@@ -664,7 +664,7 @@ const Game = () => {
   function endGame() {
     updateStory(
       'Your journey has come to an end. You leave the tower, looking out across the restored lands of Luméira. The balance of energy has been restored, thanks to your efforts. As you walk into the horizon, the sun and moon hang in perfect harmony in the sky—a reminder of the balance between light and darkness. The people of Luméira will forever remember the Paladin Wizard who brought balance to their world.',
-      'end.jpg'
+      'end.JPG'
     );
     updateChoices([{ text: 'Restart the adventure', action: returnToHome }]);
   }
