@@ -320,8 +320,10 @@ const Game = () => {
       'You take the Soul Gem. Its energy flows through you, granting you the power to restore balance across Luméira. This gem will greatly influence the outcome of your journey.',
       'soul_gem_collected.jpg'
     );
-    pledgeLoyalty(); // Proceed with the main quest
-  }
+      updateChoices([
+        { text: 'Return to the Elves Quest', action: elvesQuest },
+      ]);
+    }
 
   function pledgeLoyalty() {
     updateStory(
