@@ -155,19 +155,19 @@ function App() {
       </header>
       <div className="container">
         <div className="image-box">
-          <img src="./assets/Paladin.jpg" alt="Paladin" />
+          <img src="Paladin.jpg" alt="Paladin" />
           <p>Brave Paladin</p>
         </div>
         <div className="image-box">
-          <img src="./assets/Borovan.jpg" alt="Dragon" />
+          <img src="Borovan.jpg" alt="Dragon" />
           <p>Dragon king</p>
         </div>
         <div className="image-box">
-          <img src="./assets/Priests.jpg" alt="Wizard" />
+          <img src="Priests.jpg" alt="Wizard" />
           <p>protect your eggs</p>
         </div>
         <div className="image-box">
-          <img src="./assets/Eggs.jpg" alt="Egg" />
+          <img src="Eggs.jpg" alt="Egg" />
           <p>draggin karma eggs</p>
         </div>
       </div>
