@@ -63,7 +63,7 @@ const CharacterSelection = () => {
         `./assets/game-assets/characters/character${selectedCharacter}.png`
       );
       setShowStartGameButton(true);
-      setShowModal(false);
+      //setShowModal(false);
     } else {
       alert('Please select a character before starting the game.');
     }
@@ -87,80 +87,60 @@ const CharacterSelection = () => {
       <h1>DRAGGIN KARMA POINTS</h1>
       <h2>quest of the paladin wizards</h2>
 
-      {/* Game Content Section
-        <section id={styles.gameContent}>
-          <div id={styles.gameStoryContainer}>
-            <div id={styles.npcDialogue}>
-              <p id={styles.gameStory}></p>
-            </div>
-            {/* <img id={styles.gameImage} src="" alt="Game Image" />
-          </div>
-          <div id={styles.gameChoices}></div>
-          {showStartGameButton && (
-            <button onClick={handleStartGame} className={styles.actionButton}>
-              Start Game
-            </button>
-          )}
-        </section> */}
-      <Game />
-
-      {/* Inventory and Player Info Section */}
-      <aside id={styles.inventoryContainer}>
-        <div id={styles.playerInfo}>
-          <img
-            id={styles.profilePicture}
-            src={profilePicture}
-            alt="Profile Picture"
-          />
-          <h3 id={styles.characterName}>{characterName}</h3>
-          <p>
-            Karma Level: <span id={styles.karmaLevel}>0</span>
-          </p>
-        </div>
-        <div id={styles.inventory}>
-          <h3>Inventory</h3>
-          <ul id={styles.inventoryList}></ul>
-        </div>
-      </aside>
-
       {/* Character Selection Modal */}
-      {showModal ? (
-        <>
-          <div id={styles.characterSelectionModal} className={styles.modal}>
-            <div className={styles.modalContent}>
-              <h2>Select Your DPW</h2>
-              <div id={styles.characterGrid}>
-                {Array.from({ length: totalCharacters }).map((_, i) => (
-                  <div
-                    key={i + 1}
-                    className={`${styles.characterWrapper} ${
-                      selectedCharacter === i + 1 ? 'selected' : ''
-                    }`}
-                    onClick={() => selectCharacter(i + 1)}
-                  >
-                    <img
-                      src={`./assets/game-assets/characters/character${
-                        i + 1
-                      }.png`}
-                      alt={`Character ${i + 1}`}
-                    />
-                    <p className={styles.characterName}>{characterNames[i]}</p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={handleConfirmCharacter}
-                id={styles.confirmCharacter}
-                className={styles.actionButton}
-              >
-                Confirm Selection
-              </button>
+      <>
+        <div>
+          <div className={styles.modalContent}>
+            <h2>Select Your DPW</h2>
+            <div id={styles.characterGrid}>
+              {Array.from({ length: totalCharacters }).map((_, i) => (
+                <div
+                  key={i + 1}
+                  className={`${styles.characterWrapper} ${
+                    selectedCharacter === i + 1 ? 'selected' : ''
+                  }`}
+                  onClick={() => selectCharacter(i + 1)}
+                >
+                  <img
+                    src={`./assets/game-assets/characters/character${
+                      i + 1
+                    }.png`}
+                    alt={`Character ${i + 1}`}
+                  />
+                  <p className={styles.characterName}>{characterNames[i]}</p>
+                </div>
+              ))}
             </div>
+            <button
+              onClick={handleConfirmCharacter}
+              id={styles.confirmCharacter}
+              className={styles.actionButton}
+            >
+              Confirm Selection
+            </button>
           </div>
-        </>
-      ) : (
-        <></>
-      )}
+          {showStartGameButton ? <Game /> : <></>}
+
+          {/* Inventory and Player Info Section */}
+          <aside id={styles.inventoryContainer}>
+            <div id={styles.playerInfo}>
+              <img
+                id={styles.profilePicture}
+                src={profilePicture}
+                alt="Profile Picture"
+              />
+              <h3 id={styles.characterName}>{characterName}</h3>
+              <p>
+                Karma Level: <span id={styles.karmaLevel}>0</span>
+              </p>
+            </div>
+            <div id={styles.inventory}>
+              <h3>Inventory</h3>
+              <ul id={styles.inventoryList}></ul>
+            </div>
+          </aside>
+        </div>
+      </>
     </>
   );
 };

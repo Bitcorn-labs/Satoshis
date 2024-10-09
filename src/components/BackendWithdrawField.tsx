@@ -238,6 +238,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            className="bobButton"
           >
             {`Return to ${inputToken.ticker}s`}
           </button>

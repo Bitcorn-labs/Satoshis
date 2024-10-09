@@ -134,7 +134,11 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
       {!isConnected ? (
         <>
           <div className="card">
-            <button onClick={handleLogin} disabled={loading}>
+            <button
+              className="bobButton"
+              onClick={handleLogin}
+              disabled={loading}
+            >
               Login with Plug
             </button>
           </div>
@@ -146,7 +150,11 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
             <br />
             {loggedInPrincipal}
           </p>
-          <button onClick={handleLogout} disabled={loading}>
+          <button
+            className="bobButton"
+            onClick={handleLogout}
+            disabled={loading}
+          >
             Logout
           </button>
         </>

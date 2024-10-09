@@ -173,6 +173,7 @@ const InternetIdentityLoginHandler: React.FC<
               onClick={() => {
                 setButtonToggle(!buttonToggle);
               }}
+              className="bobButton"
             >
               Login with Internet Identity
             </button>
@@ -183,6 +184,7 @@ const InternetIdentityLoginHandler: React.FC<
                 onClick={() => {
                   setupIdentityProvider(0);
                 }}
+                className="bobButton"
               >
                 ic0.app
               </button>
@@ -191,6 +193,7 @@ const InternetIdentityLoginHandler: React.FC<
                 onClick={() => {
                   setupIdentityProvider(1);
                 }}
+                className="bobButton"
               >
                 internetcomputer.org
               </button>
@@ -203,7 +206,9 @@ const InternetIdentityLoginHandler: React.FC<
             Your Internet Identity Principal is <br />
             {loggedInPrincipal}
           </p>
-          <button onClick={logout}>Logout</button>
+          <button className="bobButton" onClick={logout}>
+            Logout
+          </button>
         </>
       ) : (
         <></>

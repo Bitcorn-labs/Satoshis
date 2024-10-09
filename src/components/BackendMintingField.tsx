@@ -229,6 +229,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            className="bobButton"
           >
             {`shrink ${inputToken.ticker}????`}
           </button>

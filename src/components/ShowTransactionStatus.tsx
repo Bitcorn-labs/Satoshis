@@ -81,6 +81,7 @@ const ShowTransactionStatus = ({
             <div style={{ width: '0%' }}></div>
             <div style={{ width: '100%' }}>
               <button
+                className="bobButton"
                 onClick={() => {
                   setExpanded(!expanded);
                 }}

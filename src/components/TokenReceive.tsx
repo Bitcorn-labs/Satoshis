@@ -50,7 +50,7 @@ const TokenReceive: React.FC<{
       >
         {loggedInPrincipal}
         <div>
-          <button>copy</button>
+          <button className="bobButton">copy</button>
         </div>
       </div>
 
