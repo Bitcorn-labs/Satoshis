@@ -607,7 +607,7 @@ const Game = () => {
     }
 
     storyText +=
-      " 'Now, Paladin Wizard, the final choice is yours. How will you use your karmic energy to restore balance to Luméira?'";
+      " 'Now, Paladin Wizard, the final choice is yours. Will you use your karmic energy to recieve the wizards secret?'";
 
     updateStory(storyText, 'wizard.jpg');
 
@@ -628,7 +628,7 @@ const Game = () => {
   function finalEndingSoulGem() {
     updateStory(
       'You raise the **Soul Gem**, and its energy flows through you, casting light and shadow across the land. The Wizard smiles as the gem releases its power, spreading balance throughout Luméira. The dark forces that once threatened the land dissipate, and harmony is restored.',
-      'soul_gem_end.jpg'
+      'soul_gem_end.JPG'
     );
     updateChoices([
       { text: 'Thank the Wizard and leave the tower', action: endGame },
