@@ -1,26 +1,23 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Principal } from '@dfinity/principal';
 import ic from 'ic0';
 import { Stats } from './declarations/backend/backend.did.d';
 
 import bigintToFloatString from './bigIntToFloatString';
-import PlugLoginHandler from './components/PlugLoginHandler';
-import InternetIdentityLoginHandler from './components/InternetIdentityLoginHandler';
-import TokenManagement from './components/TokenManagement';
-import GroupPhoto from './components/GroupPhoto';
 import TokenObject from './TokenObject';
-import BackendMintingField from './components/BackendMintingField';
-import BackendWithdrawField from './components/BackendWithdrawField';
 import CharacterSelection from './game/CharacterSelection';
-import Game from './game/Game';
+import { Route, Routes } from 'react-router-dom';
+import Home from './Home';
+import NotFound from './NotFound';
+import Footer from './components/Footer';
+import Header from './components/Header';
+import Lair from './Lair';
+import Keep from './Keep';
 
 function App() {
   const [loading, setLoading] = useState(false);
   // const [icpBalance, setIcpBalance] = useState<bigint>(0n);
-
-  const [bobLedgerAllowance, setBobLedgerAllowance] = useState<bigint>(0n);
-  const [reBobLedgerAllowance, setReBobLedgerAllowance] = useState<bigint>(0n);
 
   const [share, setShare] = useState<bigint>(0n);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -32,6 +29,11 @@ function App() {
   // const [totalReBobMinted, setTotalReBobMinted] = useState<string>('');
 
   const [loggedInPrincipal, setLoggedInPrincipal] = useState('');
+
+  const [content, setContent] = useState<string>('');
+  const [isGameBeaten, setIsGameBeaten] = useState<boolean>(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const inputTokenDetails = {
     fee: 100_000n,
@@ -117,6 +119,10 @@ function App() {
         loggedInPrincipal: '',
       })
     );
+
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to the element smoothly
+    }
   }, []); // Dependency array remains empty if you only want this effect to run once on component mount
 
   const fetchStats = async () => {
@@ -127,14 +133,14 @@ function App() {
     }
   };
 
-  const isValidPrincipal = (principalString: string): boolean => {
-    try {
-      Principal.fromText(principalString);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
+  // const isValidPrincipal = (principalString: string): boolean => {
+  //   try {
+  //     Principal.fromText(principalString);
+  //     return true;
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
 
   const fetchBalances = async () => {
     fetchTotalTokens();
@@ -145,129 +151,53 @@ function App() {
   };
 
   return (
-    <div className="App" style={{ maxWidth: '600px' }}>
-      <header>
-        <h1>DRAGGIN KARMA POINTS</h1>
-        <h1>Paladin Wizard Society</h1>
-        <h2>
-          Use your karma points to unleash your inner Dragon Paladin Wizard
-        </h2>
-      </header>
-      <div className="container">
-        <div className="image-box">
-          <img src="./assets/Paladin.jpg" alt="Paladin" />
-          <p>Brave Paladin</p>
-        </div>
-        <div className="image-box">
-          <img src="./assets/Borovan.jpg" alt="Dragon" />
-          <p>Dragon king</p>
-        </div>
-        <div className="image-box">
-          <img src="./assets/Priests.jpg" alt="Wizard" />
-          <p>protect your eggs</p>
-        </div>
-        <div className="image-box">
-          <img src="./assets/Eggs.jpg" alt="Egg" />
-          <p>draggin karma eggs</p>
-        </div>
-      </div>
-      <div className="banner">Dragon Paladin Wizards</div>
-      {/* <!--------------------------------ACTION--> */}
-      <PlugLoginHandler
-        tokens={[inputTokenObject, outputTokenObject]}
-        loading={loading}
-        setLoading={setLoading}
-        isConnected={isConnected}
-        setIsConnected={setIsConnected}
-        connectionType={connectionType}
-        setConnectionType={setConnectionType}
-        loggedInPrincipal={loggedInPrincipal}
-        setLoggedInPrincipal={setLoggedInPrincipal}
-      />
-      <InternetIdentityLoginHandler
-        tokens={[inputTokenObject, outputTokenObject]}
-        loading={loading}
-        setLoading={setLoading}
-        isConnected={isConnected}
-        setIsConnected={setIsConnected}
-        connectionType={connectionType}
-        setConnectionType={setConnectionType}
-        loggedInPrincipal={loggedInPrincipal}
-        setLoggedInPrincipal={setLoggedInPrincipal}
-      />
-      {isConnected ? (
-        <>
-          <div
-            style={{
-              border: '3px solid lightgrey',
-              padding: '10px',
-              width: '100%',
-            }}
-          >
-            <h2>{`Convert ${inputTokenObject.ticker}:`}</h2>
-            <h3>{`$${inputTokenObject.ticker} Balance: ${bigintToFloatString(
-              inputTokenObject.ledgerBalance,
-              inputTokenObject.decimals
-            )}`}</h3>
-            <BackendMintingField
-              inputToken={inputTokenObject}
-              outputToken={outputTokenObject}
+    <div
+      className="App"
+      style={{
+        display: 'flex', // Enable flexbox
+        flexDirection: 'column', // Optional: stack children vertically
+        justifyContent: 'center', // Center content vertically
+        alignItems: 'center', // Center content horizontally
+        minHeight: '100vh', // Make sure it covers the full viewport height
+        textAlign: 'center', // Center text if needed
+        width: '100%',
+        margin: '0',
+        padding: '0',
+        boxSizing: 'border-box',
+      }}
+    >
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              inputTokenObject={inputTokenObject}
+              outputTokenObject={outputTokenObject}
               loading={loading}
               setLoading={setLoading}
               isConnected={isConnected}
+              setIsConnected={setIsConnected}
+              connectionType={connectionType}
+              setConnectionType={setConnectionType}
+              loggedInPrincipal={loggedInPrincipal}
+              setLoggedInPrincipal={setLoggedInPrincipal}
             />
-
-            <p></p>
-          </div>
-          <div
-            style={{
-              border: '3px solid lightgrey',
-              padding: '10px',
-              width: '100%',
-              marginTop: '16px',
-            }}
-          >
-            <h2>{`Convert ${outputTokenObject.ticker}:`}</h2>
-            <h3>
-              {`$${outputTokenObject.ticker} Balance: `}
-              {bigintToFloatString(
-                outputTokenObject.ledgerBalance,
-                outputTokenObject.decimals
-              )}
-            </h3>
-            <BackendWithdrawField
-              inputToken={inputTokenObject}
-              outputToken={outputTokenObject}
-              loading={loading}
-              setLoading={setLoading}
-              isConnected={isConnected}
-            />
-          </div>
-          <TokenManagement
-            loading={loading}
-            setLoading={setLoading}
-            tokens={[inputTokenObject, outputTokenObject]}
-            loggedInPrincipal={loggedInPrincipal}
-            fetchBalances={fetchBalances}
-          />
-        </>
-      ) : (
-        <></>
-      )}
-      <CharacterSelection />
-      <div className="egg-section">
-        <h2>use karma points</h2>
-        <p>
-          You've sent <span id="eggsSent">0</span> dragon karma to this world.
-          How much more will you send?
-        </p>
-        <button id="sendEggButton">deposit dkp in the dragons keep</button>
-      </div>
-      {/* <!--------------------------------ACTION--> */}
-      {/* <GroupPhoto /> */}
-      <p className="read-the-docs">
-        Bitcorn Labs presents: Dragon Paladin Wizard
-      </p>
+          }
+        />
+        <Route path="/game" element={<CharacterSelection />} />
+        <Route path="/keep" element={<Keep />} />
+        <Route path="/lair" element={<Lair />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer
+        loading={loading}
+        setLoading={setLoading}
+        tokens={[inputTokenObject, outputTokenObject]}
+        loggedInPrincipal={loggedInPrincipal}
+        fetchBalances={fetchBalances}
+        isConnected={isConnected}
+      />
     </div>
   );
 }

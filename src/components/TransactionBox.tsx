@@ -225,6 +225,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
             </div>
             <div>
               <button
+                className="bobButton"
                 disabled={buttonDisabled || principalFieldErrored || loading}
                 onClick={handleTransaction}
                 style={{ height: '56px' }}

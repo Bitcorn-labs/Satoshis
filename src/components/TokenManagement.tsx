@@ -9,6 +9,7 @@ interface TokenManagementProps {
   tokens: TokenObject[]; // Array of tokens
   loggedInPrincipal: string;
   fetchBalances: () => void;
+  isConnected: boolean;
 }
 
 const TokenManagement: React.FC<TokenManagementProps> = ({
@@ -17,6 +18,7 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
   tokens,
   loggedInPrincipal,
   fetchBalances,
+  isConnected,
 }) => {
   const [activeTab, setActiveTab] = useState(0); // Use index to track active tab
   const [lastUpdate, setLastUpdate] = useState(Date.now());
@@ -50,33 +52,37 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
     }
   }, [activeTab]);
 
-  return (
-    <div>
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '2px solid #ddd' }}>
-        {tokens.map((token, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveTab(index)}
-            style={{
-              padding: '10px',
-              cursor: 'pointer',
-              border: activeTab === index ? '2px solid #646cff' : 'none',
-              color: activeTab === index ? '' : '',
-              borderBottom: activeTab === index ? '2px solid #646cff' : 'none',
-              outline: 'none',
-              width: '50%',
-            }}
-          >
-            {index === 0 ? `$${token.ticker}` : `$${token.ticker}`} {/*lol?*/}
-          </button>
-        ))}
-      </div>
+  if (isConnected) {
+    return (
+      <div style={{ maxWidth: '600px' }} className="transactionBox">
+        {/* Tabs */}
+        <div style={{ display: 'flex', borderBottom: '2px solid #ddd' }}>
+          {tokens.map((token, index) => (
+            <button
+              className="bobButton"
+              key={index}
+              onClick={() => setActiveTab(index)}
+              style={{
+                padding: '10px',
+                cursor: 'pointer',
+                border: activeTab === index ? '2px solid #646cff' : 'none',
+                color: activeTab === index ? '' : '',
+                borderBottom:
+                  activeTab === index ? '2px solid #646cff' : 'none',
+                outline: 'none',
+                width: '50%',
+              }}
+            >
+              {index === 0 ? `$${token.ticker}` : `$${token.ticker}`} {/*lol?*/}
+            </button>
+          ))}
+        </div>
 
-      {/* Tab Content */}
-      <div style={{ padding: '20px' }}>{renderContent()}</div>
-    </div>
-  );
+        {/* Tab Content */}
+        <div style={{ padding: '20px' }}>{renderContent()}</div>
+      </div>
+    );
+  }
 };
 
 export default TokenManagement;
