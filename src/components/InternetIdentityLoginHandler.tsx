@@ -108,7 +108,7 @@ const InternetIdentityLoginHandler: React.FC<
   }, []);
 
   const checkLoggedIn = async () => {
-    if (!isConnected || connectionType !== 'ii') return;
+    if (connectionType !== '') return;
     if (!authClient) return;
 
     const authenticated = await authClient.isAuthenticated();
@@ -155,7 +155,6 @@ const InternetIdentityLoginHandler: React.FC<
 
     if (process.env.DFX_NETWORK === 'local') {
       await agent.fetchRootKey();
-      console.log('aaa');
     }
 
     for (const token of tokens) {

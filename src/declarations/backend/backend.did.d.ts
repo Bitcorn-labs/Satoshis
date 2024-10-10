@@ -202,6 +202,7 @@ export interface Token {
   'clearLog' : ActorMethod<[], undefined>,
   'deposit' : ActorMethod<[[] | [Uint8Array | number[]], bigint], Result>,
   'deposit_cycles' : ActorMethod<[], undefined>,
+  'didPrincipalWin' : ActorMethod<[Principal], boolean>,
   'getLastError' : ActorMethod<[], [string, bigint]>,
   'get_log' : ActorMethod<[], Array<string>>,
   'get_tip' : ActorMethod<[], Tip>,
@@ -238,6 +239,7 @@ export interface Token {
     TransferBatchResults
   >,
   'init' : ActorMethod<[], undefined>,
+  'setGameCompleted' : ActorMethod<[], undefined>,
   'stats' : ActorMethod<[], Stats>,
   'withdraw' : ActorMethod<[[] | [Uint8Array | number[]], bigint], Result>,
 }

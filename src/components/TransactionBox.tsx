@@ -219,7 +219,11 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
               style={{ width: '200px', minHeight: '84px' }} // Set a fixed width or use a percentage
             />
             <div>
-              <button style={{ height: '56px' }} onClick={handleMaxClick}>
+              <button
+                className="bobButton"
+                style={{ height: '56px' }}
+                onClick={handleMaxClick}
+              >
                 MAX
               </button>
             </div>

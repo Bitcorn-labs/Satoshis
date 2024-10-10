@@ -4,6 +4,8 @@ import { Principal } from '@dfinity/principal';
 import { idlFactory as backendFactory } from './declarations/backend';
 // import { _SERVICE as bobService } from './declarations/nns-ledger';
 import { _SERVICE as reBobService } from './declarations/service_hack/service';
+// import { _SERVICE as reBobService } from './declarations/backend/';
+import { Token } from './declarations/internet_identity/internet_identity.did';
 
 interface TokenObjectParams {
   actor: reBobService | null;
@@ -149,6 +151,7 @@ class TokenObject {
       if ('ok' in result) {
         return true;
       } else {
+        console.log({ result });
         console.error(`Failed to burn ${this.ticker}:`, result.err.toString());
         return false;
       }
@@ -175,10 +178,60 @@ class TokenObject {
 
       return response;
     } catch (e) {
-      console.error('Something went wrong fectching a balance.', e);
+      console.error(
+        `Something went wrong fectching a balance. ${this.ticker}`,
+        e
+      );
     } finally {
       return null;
     }
+  }
+
+  async setGameCompleted(): Promise<void> {
+    if (this.actor === null) return;
+    try {
+      const isCompleted = await this.checkGameCompleted();
+      if (!isCompleted) {
+        console.log('setting game completed');
+        this.actor.setGameCompleted();
+      }
+    } catch (error) {
+      console.log(
+        "an error occurred while trying to let the backend know you've completed the game.",
+        error
+      );
+    }
+  }
+
+  async checkGameCompleted(): Promise<boolean> {
+    if (this.actor === null) return false;
+    try {
+      const isCompleted = await this.actor.didPrincipalWin(
+        Principal.fromText(this.loggedInPrincipal)
+      );
+      // console.log(
+      //   'Checked if the game was completed, backend says:',
+      //   isCompleted
+      // );
+      return isCompleted;
+    } catch (error) {
+      console.log(
+        "an error occurred while trying to ask the backend if you've completed the game.",
+        error
+      );
+    }
+
+    return false;
+  }
+
+  printDetails(): void {
+    console.log('actor', this.actor);
+    console.log('fee', this.fee);
+    console.log('ticker', this.ticker);
+    console.log('decimals', this.decimals);
+    console.log('ledgerBalance', this.ledgerBalance);
+    console.log('canisterId', this.canisterId);
+    console.log('loggedInPrincipal', this.loggedInPrincipal);
   }
 
   async logout(): Promise<void> {

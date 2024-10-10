@@ -41,7 +41,7 @@ const Footer: React.FC<FooterProps> = ({
           in any cryptocurrency activities
         </p>
         <p>
-          <a href="bitcorn.dev">bitcorn.dev</a>
+          <a href="https://bitcorn.dev/">bitcorn.dev</a>
         </p>
       </footer>
     </>

@@ -3,7 +3,7 @@ import bigintToFloatString from '../bigIntToFloatString';
 import BackendMintingField from './BackendMintingField';
 import BackendWithdrawField from './BackendWithdrawField';
 
-interface FooterProps {
+interface SwapFieldsProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
   isConnected: boolean;
@@ -11,7 +11,7 @@ interface FooterProps {
   outputTokenObject: TokenObject;
 }
 
-const SwapFields: React.FC<FooterProps> = ({
+const SwapFields: React.FC<SwapFieldsProps> = ({
   loading,
   setLoading,
   isConnected,
@@ -70,7 +70,7 @@ const SwapFields: React.FC<FooterProps> = ({
           </div>
         </>
       ) : (
-        <></>
+        <>Please connect your wallet to use this feature.</>
       )}
     </>
   );

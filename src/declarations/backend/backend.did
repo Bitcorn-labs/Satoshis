@@ -183,6 +183,7 @@ type Token =
    clearLog: () -> ();
    deposit: (opt vec nat8, nat) -> (Result);
    deposit_cycles: () -> ();
+   didPrincipalWin: (principal) -> (bool) query;
    getLastError: () -> (text, int) query;
    get_log: () -> (vec text) query;
    get_tip: () -> (Tip) query;
@@ -215,6 +216,7 @@ type Token =
    icrc4_maximum_update_batch_size: () -> (opt nat) query;
    icrc4_transfer_batch: (TransferBatchArgs) -> (TransferBatchResults);
    init: () -> ();
+   setGameCompleted: () -> ();
    stats: () -> (Stats) query;
    withdraw: (opt vec nat8, nat) -> (Result);
  };

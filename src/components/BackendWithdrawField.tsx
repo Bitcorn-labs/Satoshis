@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { TextField, ThemeProvider } from '@mui/material';
 import theme from '../theme';
 import bigintToFloatString from '../bigIntToFloatString';
-import { Principal } from '@dfinity/principal';
 // import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
 // import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import ShowTransactionStatus from './ShowTransactionStatus';
@@ -40,8 +39,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
     }
 
     if (
-      outputFieldNatValue + inputToken.fee + outputToken.fee >
-        outputToken.ledgerBalance ||
+      outputFieldNatValue + outputToken.fee * 1n > outputToken.ledgerBalance ||
       outputToken.ledgerBalance < minimumTransactionAmount
     ) {
       // Cover the bob transfer from backend fee. Cover the reBob approval fee. The reBob is burned without a fee applied.
@@ -68,7 +66,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
       return;
     }
 
-    const result = await backendWithdraw(outputFieldNatValue + inputToken.fee);
+    const result = await backendWithdraw(outputFieldNatValue);
 
     if (!result) {
       addStatus(`${outputToken.ticker} was approved, but was not transferred.`);
@@ -166,14 +164,14 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
 
     // console.log(bobNatValue);
     setButtonDisabled(
-      outputNatValue + outputToken.fee * 2n > outputToken.ledgerBalance
+      outputNatValue + outputToken.fee * 1n > outputToken.ledgerBalance
     );
     setTextFieldValueTooLow(outputNatValue < minimumTransactionAmount);
     setTextFieldErrored(
       (outputToken.ledgerBalance < minimumTransactionAmount &&
         outputNatValue > 0) ||
         (outputToken.ledgerBalance >= minimumTransactionAmount &&
-          outputNatValue + outputToken.fee * 2n > outputToken.ledgerBalance)
+          outputNatValue + outputToken.fee * 1n > outputToken.ledgerBalance)
     );
     setOutputFieldNatValue(outputNatValue);
   }, [outputFieldValue, outputToken]);
