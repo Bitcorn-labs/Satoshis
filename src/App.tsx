@@ -30,10 +30,7 @@ function App() {
 
   const [loggedInPrincipal, setLoggedInPrincipal] = useState('');
 
-  const [content, setContent] = useState<string>('');
-  const [isGameBeaten, setIsGameBeaten] = useState<boolean>(false);
-
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [gameCompleted, setGameCompleted] = useState<boolean>(false);
 
   const inputTokenDetails = {
     fee: 100_000n,
@@ -82,7 +79,7 @@ function App() {
     // }); // Can't use plug actors as anonymous.
     // We will use the internet identity anonymous calls in the next update. ic0 will work for now.
     if (process.env.DFX_NETWORK === 'local') return;
-    const inputIcActor = await ic('7pail-xaaaa-aaaas-aabmq-cai'); // hard coding this because it will work in local still.
+    const inputIcActor = await ic(inputTokenObject.canisterId); // hard coding this because it will work in local still.
     const totalInputTokenResponse = await inputIcActor.call(
       'icrc1_balance_of',
       {
@@ -95,6 +92,16 @@ function App() {
       bigintToFloatString(totalInputTokenResponse, inputTokenObject.decimals)
     );
     // setTotalReBobMinted(bigintToFloatString(totalReBobMintedResponse));
+  };
+
+  const checkGameCompleted = async (): Promise<boolean> => {
+    const response = await outputTokenObject.checkGameCompleted();
+    if (response) {
+      setGameCompleted(response); // I don't want to set it to false.
+      return response;
+    }
+    console.log({ response, gameCompleted });
+    return false;
   };
 
   useEffect(() => {
@@ -119,11 +126,23 @@ function App() {
         loggedInPrincipal: '',
       })
     );
-
-    if (contentRef.current) {
-      contentRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to the element smoothly
-    }
   }, []); // Dependency array remains empty if you only want this effect to run once on component mount
+
+  useEffect(() => {
+    if (!isConnected || !outputTokenObject.actor) return;
+    const backendCompleted = checkGameCompleted();
+
+    if (gameCompleted && !backendCompleted) {
+      console.log('game completed and setting via outputTokenObject');
+      // call backend to complete the game.
+      const test = outputTokenObject.setGameCompleted();
+    }
+  }, [gameCompleted, isConnected, outputTokenObject]);
+
+  useEffect(() => {
+    if (!outputTokenObject.actor) return;
+    checkGameCompleted();
+  }, [outputTokenObject]);
 
   const fetchStats = async () => {
     if (outputTokenObject.actor !== null) {
@@ -150,6 +169,14 @@ function App() {
     outputTokenObject.getLedgerBalance();
   };
 
+  const loginSection = useRef<HTMLDivElement | null>(null);
+
+  const handleScrollToLogin = () => {
+    if (loginSection.current) {
+      loginSection.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div
       className="App"
@@ -166,17 +193,47 @@ function App() {
         boxSizing: 'border-box',
       }}
     >
-      <Header />
+      <Header
+        inputTokenObject={inputTokenObject}
+        outputTokenObject={outputTokenObject}
+        loading={loading}
+        setLoading={setLoading}
+        isConnected={isConnected}
+        setIsConnected={setIsConnected}
+        connectionType={connectionType}
+        setConnectionType={setConnectionType}
+        loggedInPrincipal={loggedInPrincipal}
+        setLoggedInPrincipal={setLoggedInPrincipal}
+        gameCompleted={gameCompleted}
+        loginSection={loginSection}
+      />
       <Routes>
         <Route
           path="/"
+          element={<Home totalInputTokenHeld={totalInputTokenHeld} />}
+        />
+        <Route
+          path="/game"
           element={
-            <Home
-              inputTokenObject={inputTokenObject}
-              outputTokenObject={outputTokenObject}
+            <CharacterSelection
+              setGameCompleted={setGameCompleted}
+              gameCompleted={gameCompleted}
+              isConnected={isConnected}
+              handleScrollToLogin={handleScrollToLogin}
+            />
+          }
+        />
+        <Route
+          path="/keep"
+          element={
+            <Keep
+              gameCompleted={gameCompleted}
               loading={loading}
               setLoading={setLoading}
               isConnected={isConnected}
+              inputTokenObject={inputTokenObject}
+              outputTokenObject={outputTokenObject}
+              tokens={[inputTokenObject, outputTokenObject]}
               setIsConnected={setIsConnected}
               connectionType={connectionType}
               setConnectionType={setConnectionType}
@@ -185,8 +242,6 @@ function App() {
             />
           }
         />
-        <Route path="/game" element={<CharacterSelection />} />
-        <Route path="/keep" element={<Keep />} />
         <Route path="/lair" element={<Lair />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

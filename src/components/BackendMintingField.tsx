@@ -33,7 +33,9 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
-  const minimumTransactionAmount: bigint = inputToken.fee * 4n;
+  const extraFee = 25n * BigInt(Math.pow(10, inputToken.decimals));
+
+  const minimumTransactionAmount: bigint = inputToken.fee * 4n + extraFee;
 
   const handleInputFieldChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -173,6 +175,12 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
+      <h6 style={{ marginTop: '10px', marginBottom: '10px', color: '#999' }}>
+        {`There is a one-way fee of ${bigintToFloatString(
+          extraFee,
+          inputToken.decimals
+        )} ${inputToken.ticker} to swap to ${outputToken.ticker}`}
+      </h6>
       {inputToken.ledgerBalance <= minimumTransactionAmount ? (
         <>
           <div>

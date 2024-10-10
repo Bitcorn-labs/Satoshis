@@ -1,11 +1,24 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './game.module.css';
 import Game from './Game';
+import { Link } from 'react-router-dom';
 
-const CharacterSelection = () => {
+interface CharacterSelectionProps {
+  gameCompleted: boolean;
+  setGameCompleted: (value: boolean) => void;
+  isConnected: boolean;
+  handleScrollToLogin: () => void;
+}
+
+const CharacterSelection: React.FC<CharacterSelectionProps> = ({
+  gameCompleted,
+  setGameCompleted,
+  isConnected,
+  handleScrollToLogin,
+}) => {
   // Converted DOM element handling to state or refs in React
   const [profilePicture, setProfilePicture] = useState<string>(
-    './assets/game-assets/default_profile.png'
+    './assets/game-assets/characters/character31.png'
   );
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(
     null
@@ -45,19 +58,30 @@ const CharacterSelection = () => {
     'ysmys',
     'JR',
     'passionplanet',
-    'sns1',
+    'those forgotten',
   ];
 
+  const [showGame, setShowGame] = useState<boolean>(false); // Control to show/hide game content
+
   const totalCharacters = characterNames.length;
+
+  const startGameSection = useRef<HTMLDivElement | null>(null);
+  const topSection = useRef<HTMLDivElement | null>(null);
 
   // Function to handle character selection
   const selectCharacter = (characterIndex: number) => {
     setSelectedCharacter(characterIndex);
     setCharacterName(characterNames[characterIndex - 1]);
+    setProfilePicture(
+      `./assets/game-assets/characters/character${characterIndex}.png`
+    );
   };
 
   const handleConfirmCharacter = () => {
     if (selectedCharacter !== null) {
+      if (startGameSection.current) {
+        startGameSection.current.scrollIntoView({ behavior: 'smooth' });
+      }
       // Update profile picture and show the Start Game button
       setProfilePicture(
         `./assets/game-assets/characters/character${selectedCharacter}.png`
@@ -69,12 +93,19 @@ const CharacterSelection = () => {
     }
   };
 
+  const handleCancelCharacter = () => {
+    setProfilePicture(`./assets/game-assets/characters/character31.png`);
+    setCharacterName('Paladin Wizard');
+    setSelectedCharacter(null);
+    setShowStartGameButton(false);
+    if (topSection.current) {
+      topSection.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   useEffect(() => {
-    // Simulate showing the modal on page load
-    // In a real app, the modal display can be controlled via state
-    const modal = document.getElementById('character-selection-modal');
-    if (modal) {
-      modal.style.display = 'flex';
+    if (topSection.current) {
+      topSection.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, []);
 
@@ -84,62 +115,112 @@ const CharacterSelection = () => {
 
   return (
     <>
+      <div ref={topSection}></div>
       <h1>DRAGGIN KARMA POINTS</h1>
       <h2>quest of the paladin wizards</h2>
 
       {/* Character Selection Modal */}
       <>
         <div>
-          <div className={styles.modalContent}>
-            <h2>Select Your DPW</h2>
-            <div id={styles.characterGrid}>
-              {Array.from({ length: totalCharacters }).map((_, i) => (
-                <div
-                  key={i + 1}
-                  className={`${styles.characterWrapper} ${
-                    selectedCharacter === i + 1 ? 'selected' : ''
-                  }`}
-                  onClick={() => selectCharacter(i + 1)}
-                >
-                  <img
-                    src={`./assets/game-assets/characters/character${
-                      i + 1
-                    }.png`}
-                    alt={`Character ${i + 1}`}
-                  />
-                  <p className={styles.characterName}>{characterNames[i]}</p>
-                </div>
-              ))}
+          {!showGame ? (
+            <div>
+              <h2>Select Your DPW</h2>
+              <div className="character-images-container">
+                {Array.from({ length: totalCharacters }).map((_, i) => (
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    key={i + 1}
+                    className={`${styles.characterWrapper} ${
+                      selectedCharacter === i + 1 ? 'selected' : ''
+                    }`}
+                    onClick={() => {
+                      if (!showStartGameButton) selectCharacter(i + 1);
+                    }}
+                  >
+                    <img
+                      src={`./assets/game-assets/characters/character${
+                        i + 1
+                      }.png`}
+                      alt={`Character ${i + 1}`}
+                      className={`${
+                        showStartGameButton && selectedCharacter !== i + 1
+                          ? 'greyed-out'
+                          : ''
+                      }`}
+                    />
+                    <p
+                      style={{
+                        display: 'flex',
+                        textAlign: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      className={`${
+                        showStartGameButton && selectedCharacter !== i + 1
+                          ? 'greyed-out'
+                          : ''
+                      } ${styles.characterName}`}
+                    >
+                      {characterNames[i]}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div ref={startGameSection}></div>
+
+              {showStartGameButton ? (
+                <>
+                  <button
+                    onClick={handleCancelCharacter}
+                    className={`cancelCharacter`}
+                  >
+                    Cancel Selection
+                  </button>
+                </>
+              ) : (
+                <>
+                  {selectedCharacter && (
+                    <>
+                      <button
+                        onClick={handleConfirmCharacter}
+                        className={`cancelCharacter`}
+                      >
+                        Confirm Selection
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
             </div>
-            <button
-              onClick={handleConfirmCharacter}
-              id={styles.confirmCharacter}
-              className={styles.actionButton}
-            >
-              Confirm Selection
-            </button>
-          </div>
-          {showStartGameButton ? <Game /> : <></>}
+          ) : (
+            <></>
+          )}
+
+          <Game
+            profilePicture={profilePicture}
+            characterName={characterName}
+            showStartGameButton={showStartGameButton}
+            showGame={showGame}
+            setShowGame={setShowGame}
+            gameCompleted={gameCompleted}
+            setGameCompleted={setGameCompleted}
+            isConnected={isConnected}
+            handleScrollToLogin={handleScrollToLogin}
+          />
 
           {/* Inventory and Player Info Section */}
-          <aside id={styles.inventoryContainer}>
-            <div id={styles.playerInfo}>
-              <img
-                id={styles.profilePicture}
-                src={profilePicture}
-                alt="Profile Picture"
-              />
-              <h3 id={styles.characterName}>{characterName}</h3>
-              <p>
-                Karma Level: <span id={styles.karmaLevel}>0</span>
-              </p>
-            </div>
-            <div id={styles.inventory}>
-              <h3>Inventory</h3>
-              <ul id={styles.inventoryList}></ul>
-            </div>
-          </aside>
         </div>
+        <Link to="/">
+          <button style={{ marginTop: '16px' }} className={styles.actionButton}>
+            Back to Home
+          </button>
+        </Link>
       </>
     </>
   );

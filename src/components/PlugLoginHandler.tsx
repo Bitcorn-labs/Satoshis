@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import TokenObject from '../TokenObject';
 
 interface PlugLoginHandlerProps {
@@ -25,7 +25,7 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
   setLoggedInPrincipal,
 }) => {
   const checkConnection = async () => {
-    if (connectionType === 'ii') return false; // I think this needs to be reworked.
+    if (connectionType !== '') return false; // I think this needs to be reworked.
     try {
       const connection = !!(await window.ic.plug.isConnected());
 

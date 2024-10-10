@@ -375,6 +375,7 @@ export const idlFactory = ({ IDL }) => {
     'clearLog' : IDL.Func([], [], []),
     'deposit' : IDL.Func([IDL.Opt(IDL.Vec(IDL.Nat8)), IDL.Nat], [Result], []),
     'deposit_cycles' : IDL.Func([], [], []),
+    'didPrincipalWin' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'getLastError' : IDL.Func([], [IDL.Text, IDL.Int], ['query']),
     'get_log' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'get_tip' : IDL.Func([], [Tip], ['query']),
@@ -455,6 +456,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'init' : IDL.Func([], [], []),
+    'setGameCompleted' : IDL.Func([], [], []),
     'stats' : IDL.Func([], [Stats], ['query']),
     'withdraw' : IDL.Func([IDL.Opt(IDL.Vec(IDL.Nat8)), IDL.Nat], [Result], []),
   });

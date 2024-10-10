@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './game.module.css';
+import { Link } from 'react-router-dom';
+import TimeTracker from '../components/TimeTracker';
+
+// import luminescentGrove from '../assets/game-assets/luminescent_grove.jpg'; // This is how it should be done so all images are snappy.
 
 interface GameState {
   inventory: string[]; // Inventory is an array of strings
@@ -9,7 +13,29 @@ interface GameState {
   sideQuestsCompleted: number;
 }
 
-const Game = () => {
+interface GameProps {
+  profilePicture: string;
+  characterName: string;
+  showStartGameButton: boolean;
+  showGame: boolean;
+  setShowGame: (value: boolean) => void;
+  gameCompleted: boolean;
+  setGameCompleted: (value: boolean) => void;
+  isConnected: boolean;
+  handleScrollToLogin: () => void;
+}
+
+const Game: React.FC<GameProps> = ({
+  profilePicture,
+  characterName,
+  showStartGameButton,
+  showGame,
+  setShowGame,
+  gameCompleted,
+  setGameCompleted,
+  isConnected,
+  handleScrollToLogin,
+}) => {
   // Expanded Game state to track player's progress, inventory, karma, and side quests
   const [gameState, setGameState] = useState<GameState>({
     inventory: [],
@@ -26,8 +52,14 @@ const Game = () => {
   >([]); // Available choices for the player
 
   const [showInventory, setShowInventory] = useState<boolean>(false);
-  const [showGame, setShowGame] = useState<boolean>(false); // Control to show/hide game content
-  const [showSwapInterface, setShowSwapInterface] = useState<boolean>(false);
+
+  const [showYouAreWorthy, setShowYouAreWorthy] = useState<boolean>(false);
+
+  const topSection = useRef<HTMLDivElement | null>(null);
+
+  const [bStartTimer, setbStartTimer] = useState(false);
+  const [bStopTimer, setbStopTimer] = useState(false);
+  const [bResetTimer, setbResetTimer] = useState(false);
 
   // Utility function to update the story and display an image if provided
   const updateStory = (text: string, imgSrc: string | null = null) => {
@@ -40,16 +72,19 @@ const Game = () => {
     setGameChoices(choices); // Update available choices
   };
 
-  // Utility function to update the player's inventory
-  const updateInventory = () => {
-    setShowInventory(true); // Show inventory when items are added
-  };
-
   // Start Game function to initialize the game
   const startGame = () => {
     setShowGame(true); // Display game content
+    setShowInventory(true);
     introduction(); // Start the game with the introduction
+    setbStartTimer(!bStartTimer);
   };
+
+  useEffect(() => {
+    if (topSection.current) {
+      topSection.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [showGame]);
 
   // Introduction: Initial scene to set up the game world
   const introduction = () => {
@@ -144,18 +179,20 @@ const Game = () => {
 
   const jewelsOfPositiveKarma = () => {
     if (
-      !gameState.inventory.includes('Jewels of Positive Karma') &&
-      !gameState.inventory.includes('Jewels of Negative Karma')
+      !(
+        gameState.inventory.includes('Jewels of Positive Karma') ||
+        gameState.inventory.includes('Jewels of Negative Karma')
+      )
     ) {
-      setGameState((prevState) => ({
-        ...prevState,
-        inventory: [...prevState.inventory, 'Jewels of Positive Karma'], // Add to inventory
-        questsCompleted: prevState.questsCompleted + 1, // Increment quest completion count
-      }));
+      // setGameState((prevState) => ({
+      //   ...prevState,
+      //   inventory: [...prevState.inventory, 'Jewels of Positive Karma'], // Add to inventory
+      //   questsCompleted: prevState.questsCompleted + 1, // Increment quest completion count
+      // }));
+      gameState.inventory.push('Jewels of Positive Karma');
+      gameState.questsCompleted++; // Track the quest completion
 
       adjustKarma('positive'); // This function will handle karma updates
-
-      updateInventory(); // Call the inventory update to refresh the UI
 
       updateStory(
         "Eledrin smiles warmly as you take the Jewels of Positive Karma, their gentle glow radiating in your hands. 'May these jewels guide you to protect and nurture,' he says, placing a hand on your shoulder. 'Remember, however, that even light can cast shadows. Use your gifts wisely, for every action has its consequence.' The Elves bow, blessing your journey ahead as you sense a newfound strength within.",
@@ -175,16 +212,17 @@ const Game = () => {
 
   function jewelsOfNegativeKarma() {
     if (
-      !gameState.inventory.includes('Jewels of Negative Karma') &&
-      !gameState.inventory.includes('Jewels of Positive Karma')
+      !(
+        gameState.inventory.includes('Jewels of Negative Karma') ||
+        gameState.inventory.includes('Jewels of Positive Karma')
+      )
     ) {
       gameState.inventory.push('Jewels of Negative Karma'); // Add item to inventory
       adjustKarma('negative'); // Decrease karma level for negative action
       gameState.questsCompleted++; // Track the quest completion
-      updateInventory(); // Refresh inventory display
       updateStory(
         "As you grasp the Jewels of Negative Karma, their shadowy glow pulses in your hand. Eledrin watches, his gaze wary but resolute. 'The power of darkness is formidable, Paladin Wizard,' he says gravely. 'Use it wisely, for it can both empower and consume.' The Elves step back, their expressions mixed with caution and reverence, as you feel a surge of strength and mystery coursing through you.",
-        'jewels_negative.jpg'
+        '' //jewels_negative.jpg
       );
       offerNextQuest(); // Continue to the next quest
     } else {
@@ -198,14 +236,15 @@ const Game = () => {
 
   function attemptToTakeBothJewels() {
     if (
-      !gameState.inventory.includes('Jewels of Positive Karma') &&
-      !gameState.inventory.includes('Jewels of Negative Karma')
+      !(
+        gameState.inventory.includes('Jewels of Positive Karma') ||
+        gameState.inventory.includes('Jewels of Negative Karma')
+      )
     ) {
       gameState.inventory.push('Jewels of Positive Karma');
       gameState.inventory.push('Jewels of Negative Karma');
       adjustKarma('balanced'); // Set karma to balanced state
       gameState.questsCompleted++; // Track the quest completion
-      updateInventory(); // Refresh inventory display
       updateStory(
         "With a deep breath, you reach out and take both the Jewels of Positive and Negative Karma. A powerful surge of energy courses through you, light and darkness intertwining in a delicate balance. Eledrin's expression is a mix of awe and concern. 'You have chosen a rare and dangerous path, Paladin Wizard. May you have the strength to maintain the balance within.' The Elves bow, their faces reflecting a mixture of hope and fear.",
         'jewels_both.jpg'
@@ -247,7 +286,6 @@ const Game = () => {
     if (!gameState.inventory.includes('Enchanted Herbs')) {
       gameState.inventory.push('Enchanted Herbs'); // Add new item to inventory
       gameState.sideQuestsCompleted++; // Track side quest completion
-      updateInventory(); // Refresh inventory display
       updateStory(
         'You discover glowing Enchanted Herbs with potent healing powers. Perhaps the Mice Bakers would trade these for something useful on your journey.',
         'enchanted_herbs.jpg'
@@ -280,7 +318,7 @@ const Game = () => {
     updateChoices([
       { text: 'Pledge your loyalty to Luméira', action: pledgeLoyalty },
       {
-        text: 'Seek to understand the source of the flame’s fading',
+        text: "Seek to understand the source of the flame's fading",
         action: investigateFlame,
       },
       {
@@ -315,15 +353,12 @@ const Game = () => {
 
   function collectSoulGem() {
     gameState.inventory.push('Soul Gem'); // Add Soul Gem to inventory
-    updateInventory(); // Refresh inventory display
     updateStory(
       'You take the Soul Gem. Its energy flows through you, granting you the power to restore balance across Luméira. This gem will greatly influence the outcome of your journey.',
-      'soul_gem_collected.jpg'
+      'jewels_positive.jpg'
     );
-      updateChoices([
-        { text: 'Return to the Elves Quest', action: elvesQuest },
-      ]);
-    }
+    updateChoices([{ text: 'Return to the Elves Quest', action: elvesQuest }]);
+  }
 
   function pledgeLoyalty() {
     updateStory(
@@ -440,13 +475,11 @@ const Game = () => {
     if (!gameState.inventory.includes('Flame of Energy')) {
       gameState.inventory.push('Flame of Energy'); // Add item to inventory
       gameState.questsCompleted++; // Track the quest completion
-      updateInventory(); // Refresh inventory display
       updateStory(
         "The flame roars back to life, filling the sanctum with warmth. The Dragon Wizards offer you an Enchanted Shield as thanks for your bravery. 'Use this wisely, Paladin Wizard,' they say. In the distance, you see young dragons practicing their magical skills—future Paladin Wizards like yourself.",
         'flame_of_energy.jpg'
       );
       gameState.inventory.push('Enchanted Shield'); // Add new item to inventory
-      updateInventory(); // Refresh inventory display
       offerNextQuest(); // Continue to the next quest
     } else {
       updateStory(
@@ -479,7 +512,6 @@ const Game = () => {
       ); // Remove herbs
       gameState.inventory.push('Loaf of Friendship'); // Add loaf to inventory
       gameState.questsCompleted++; // Track quest completion
-      updateInventory(); // Refresh inventory display
       updateStory(
         "You trade the Enchanted Herbs for the Loaf of Friendship. The Mice Bakers thank you, 'This bread will aid you in uniting the people of Luméira.'",
         'loaf_of_friendship.jpg'
@@ -550,8 +582,8 @@ const Game = () => {
       "As you explore the tower, you find an ancient key hidden behind a statue. This must be the key to open the Wizard's chamber.",
       'key.jpg'
     );
-    gameState.inventory.push('Ancient Key'); // Add the key to the inventory
-    updateInventory(); // Refresh inventory display
+    if (!gameState.inventory.includes('Ancient Key'))
+      gameState.inventory.push('Ancient Key'); // Add the key to the inventory
     updateChoices([
       { text: 'Use the key to open the door', action: useKey },
       { text: 'Return to the Elves Quest', action: elvesQuest },
@@ -566,7 +598,6 @@ const Game = () => {
       gameState.inventory = gameState.inventory.filter(
         (item) => item !== 'Ancient Key'
       ); // Remove key after use
-      updateInventory(); // Refresh inventory display
       updateStory(
         'You use the ancient key to unlock the door. It creaks open, revealing the Wizard of Luméira standing at the top of the tower, waiting for you.',
         'wizard.jpg'
@@ -628,7 +659,7 @@ const Game = () => {
   function finalEndingSoulGem() {
     updateStory(
       'You raise the **Soul Gem**, and its energy flows through you, casting light and shadow across the land. The Wizard smiles as the gem releases its power, spreading balance throughout Luméira. The dark forces that once threatened the land dissipate, and harmony is restored.',
-      'soul_gem_end.JPG'
+      'soul_gem_end.jpg'
     );
     updateChoices([
       { text: 'Thank the Wizard and leave the tower', action: endGame },
@@ -642,19 +673,16 @@ const Game = () => {
         'Using the strength of your positive karma, you join the Wizard in casting a spell of pure light. The energies of the land are restored, and the people of Luméira rejoice in the peace you have brought. You have used your power for good, and the land flourishes under the light.',
         'pend.jpg'
       );
-      setShowSwapInterface(true);
     } else if (gameState.karmaLevel < 0) {
       updateStory(
         'Drawing upon your negative karma, you and the Wizard channel a powerful, dark energy that stabilizes the forces of Luméira. Though the light has faded, balance has been achieved. The land is shadowed, but stronger because of your choices.',
         'nend.jpg'
       );
-      setShowSwapInterface(true);
     } else {
       updateStory(
         'With your perfectly balanced karma, you and the Wizard work in harmony to restore the energies of Luméira. The world glows with perfect equilibrium, and the people feel a deep connection to the flow of life and magic. You have achieved true balance and restored harmony to the realm.',
         'bend.jpg'
       );
-      setShowSwapInterface(true);
     }
 
     updateChoices([
@@ -664,9 +692,14 @@ const Game = () => {
 
   // End of the game
   function endGame() {
+    if (!gameCompleted) {
+      setGameCompleted(true);
+      setShowYouAreWorthy(true); //Only shows this on first completion (hopefully)
+    }
+    setbStopTimer(!bStopTimer);
     updateStory(
       'Your journey has come to an end. You leave the tower, looking out across the restored lands of Luméira. The balance of energy has been restored, thanks to your efforts. As you walk into the horizon, the sun and moon hang in perfect harmony in the sky—a reminder of the balance between light and darkness. The people of Luméira will forever remember the Paladin Wizard who brought balance to their world.',
-      'end.JPG'
+      'end.jpg'
     );
     updateChoices([{ text: 'Restart the adventure', action: returnToHome }]);
   }
@@ -702,6 +735,8 @@ const Game = () => {
       hiddenQuestUnlocked: false,
       sideQuestsCompleted: 0,
     });
+    setbStopTimer(!bStopTimer);
+    setbResetTimer(!bResetTimer);
     setShowGame(false); // Hide game content
     setShowInventory(false); // Hide inventory
     setGameStory(''); // Clear the story
@@ -739,67 +774,134 @@ const Game = () => {
   };
 
   return (
-    <>
-      <div id={styles.gameContainer}>
-        {/* Start Game Button */}
-        {!showGame && (
-          <button
-            id={styles.startGame}
-            className={styles.actionButton}
-            onClick={startGame}
-          >
-            Start Game
-          </button>
-        )}
-
-        {/* Game Content Section */}
-        {showGame && (
-          <>
-            <section id={styles.gameContent}>
-              <div id={styles.gameStoryContainer}>
-                <div id={styles.npcDialogue}>
-                  <p id={styles.gameStory}>{gameStory}</p>
-                </div>
-                {gameImage && (
-                  <img id={styles.gameImage} src={gameImage} alt="Game Image" />
-                )}
-              </div>
-
-              <div id={styles.gameChoices}>
-                {gameChoices.map((choice, index) => (
-                  <button key={index} onClick={choice.action}>
-                    {choice.text}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            {/* Inventory Section */}
-            {showInventory && (
-              <aside id={styles.inventoryContainer}>
-                <h3>Inventory</h3>
-                <ul id={styles.inventoryList}>
-                  {gameState.inventory.map((item, index) => (
-                    <li key={index}>{item}</li>
-                  ))}
-                </ul>
-              </aside>
+    <div>
+      <div ref={topSection}></div>
+      {showStartGameButton ? (
+        <>
+          <div id={styles.gameContainer}>
+            {/* Start Game Button */}
+            {!showGame && (
+              <button
+                id={styles.startGame}
+                className={styles.actionButton}
+                onClick={startGame}
+              >
+                Start Game
+              </button>
             )}
-          </>
-        )}
 
-        {/* Return Home Button */}
-        {showGame && (
-          <button
-            id={styles.returnHome}
-            className={styles.actionButton}
-            onClick={returnToHome}
-          >
-            Quit
-          </button>
-        )}
-      </div>
-    </>
+            {/* Game Content Section */}
+            {showGame && (
+              <>
+                <section id={styles.gameContent}>
+                  <div id={styles.gameStoryContainer}>
+                    <div id={styles.npcDialogue}>
+                      <p id={styles.gameStory}>{gameStory}</p>
+                    </div>
+                    {gameImage && (
+                      <img
+                        id={styles.gameImage}
+                        src={gameImage}
+                        alt="Game Image"
+                      />
+                    )}
+                    {gameCompleted &&
+                      showYouAreWorthy &&
+                      (isConnected ? (
+                        <div>
+                          You are worthy
+                          <div>
+                            <Link to="/keep">
+                              <button className={styles.actionButton}>
+                                Enter the Keep
+                              </button>
+                            </Link>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <button
+                            onClick={handleScrollToLogin}
+                            className={styles.actionButton}
+                          >
+                            Connect to keep your progress
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+
+                  <div>
+                    {gameChoices.map((choice, index) => (
+                      <button
+                        className={styles.gameOption}
+                        key={index}
+                        onClick={choice.action}
+                      >
+                        {choice.text}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
+
+            {/* Return Home Button */}
+            {showGame && (
+              <button
+                id={styles.returnHome}
+                className={styles.actionButton}
+                onClick={returnToHome}
+              >
+                Quit
+              </button>
+            )}
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
+      <aside id={styles.inventoryContainer}>
+        <div id={styles.playerInfo}>
+          <img
+            id={styles.profilePicture}
+            src={profilePicture}
+            alt="Profile Picture"
+          />
+          <h3 id={styles.characterName}>{characterName}</h3>
+          <p>
+            Karma Level:{' '}
+            <span id={styles.karmaLevel}>{gameState.karmaLevel}</span>
+          </p>
+          <p>
+            {showGame && (
+              <TimeTracker
+                bStartTimer={bStartTimer}
+                bStopTimer={bStopTimer}
+                bResetTimer={bResetTimer}
+              />
+            )}
+          </p>
+        </div>
+      </aside>
+      {/* Inventory Section */}
+      {showInventory && (
+        <aside id={styles.inventoryContainer}>
+          <h3>Inventory</h3>
+          <ul id={styles.inventoryList}>
+            {gameState.inventory.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+
+            {/* Render empty slots if inventory has fewer than 4 items */}
+            {Array.from({
+              length: Math.max(0, 4 - gameState.inventory.length),
+            }).map((_, index) => (
+              <li key={`empty-${index}`}>--</li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </div>
   );
 };
 
