@@ -101,7 +101,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
   const selectCharacter = (characterIndex: number) => {
     setSelectedCharacter(characterIndex);
     setCharacterName(characterNames[characterIndex - 1].name);
-    setProfilePicture(characterNames[characterIndex].asset);
+    setProfilePicture(characterNames[characterIndex - 1].asset);
   };
 
   const handleConfirmCharacter = () => {
