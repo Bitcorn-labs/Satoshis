@@ -2,10 +2,6 @@ import { RefObject } from 'react';
 import TokenObject from '../TokenObject';
 import InternetIdentityLoginHandler from './InternetIdentityLoginHandler';
 import PlugLoginHandler from './PlugLoginHandler';
-import paladin from '../assets/Paladin.jpg';
-import borovan from '../assets/Borovan.jpg';
-import wizard from '../assets/Priests.jpg';
-import egg from '../assets/Eggs.jpg';
 
 interface HeaderProps {
   inputTokenObject: TokenObject;
@@ -46,19 +42,19 @@ const Header: React.FC<HeaderProps> = ({
       </header>
       <div className="container">
         <div className="image-box">
-          <img src={paladin} alt="Paladin" />
+          <img src="banner/Paladin.webp" alt="Paladin" />
           <p>Brave Paladin</p>
         </div>
         <div className="image-box">
-          <img src={borovan} alt="Dragon" />
+          <img src="banner/Borovan.webp" alt="Dragon" />
           <p>Dragon king</p>
         </div>
         <div className="image-box">
-          <img src={wizard} alt="Wizard" />
+          <img src="banner/Priests.webp" alt="Wizard" />
           <p>protect your eggs</p>
         </div>
         <div className="image-box">
-          <img src={egg} alt="Egg" />
+          <img src="banner/Eggs.webp" alt="Egg" />
           <p>draggin karma eggs</p>
         </div>
       </div>
