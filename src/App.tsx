@@ -240,7 +240,7 @@ function App() {
           }
         />
         <Route path="/lair" element={<Lair />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer
         loading={loading}
