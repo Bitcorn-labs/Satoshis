@@ -94,14 +94,12 @@ function App() {
     // setTotalReBobMinted(bigintToFloatString(totalReBobMintedResponse));
   };
 
-  const checkGameCompleted = async (): Promise<boolean> => {
+  const checkGameCompleted = async () => {
     const response = await outputTokenObject.checkGameCompleted();
     if (response) {
       setGameCompleted(response); // I don't want to set it to false.
-      return response;
     }
     console.log({ response, gameCompleted });
-    return false;
   };
 
   useEffect(() => {
@@ -130,9 +128,9 @@ function App() {
 
   useEffect(() => {
     if (!isConnected || !outputTokenObject.actor) return;
-    const backendCompleted = checkGameCompleted();
+    checkGameCompleted();
 
-    if (gameCompleted && !backendCompleted) {
+    if (gameCompleted) {
       console.log('game completed and setting via outputTokenObject');
       // call backend to complete the game.
       const test = outputTokenObject.setGameCompleted();
@@ -207,14 +205,6 @@ function App() {
         gameCompleted={gameCompleted}
         loginSection={loginSection}
       />
-      <button
-        onClick={() => {
-          inputTokenObject.printDetails();
-          outputTokenObject.printDetails();
-        }}
-      >
-        Test
-      </button>
       <Routes>
         <Route
           path="/"

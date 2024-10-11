@@ -196,7 +196,9 @@ class TokenObject {
   async setGameCompleted(): Promise<void> {
     if (this.actor === null) return;
     try {
+      console.log('checking game completion');
       const isCompleted = await this.checkGameCompleted();
+      console.log('game completed?', isCompleted);
       if (!isCompleted) {
         console.log('setting game completed');
         this.actor.setGameCompleted();
