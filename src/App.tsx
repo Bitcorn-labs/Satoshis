@@ -1,4 +1,3 @@
-import './App.css';
 import { useState, useEffect, useRef } from 'react';
 import { Principal } from '@dfinity/principal';
 import ic from 'ic0';

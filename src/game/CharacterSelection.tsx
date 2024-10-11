@@ -110,9 +110,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
         startGameSection.current.scrollIntoView({ behavior: 'smooth' });
       }
       // Update profile picture and show the Start Game button
-      setProfilePicture(
-        `./assets/game-assets/characters/character${selectedCharacter}.png`
-      );
+      setProfilePicture(characterNames[selectedCharacter - 1].asset);
       setShowStartGameButton(true);
       //setShowModal(false);
     } else {
@@ -121,7 +119,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
   };
 
   const handleCancelCharacter = () => {
-    setProfilePicture(`./assets/game-assets/characters/character31.png`);
+    setProfilePicture(those);
     setCharacterName('Paladin Wizard');
     setSelectedCharacter(null);
     setShowStartGameButton(false);
