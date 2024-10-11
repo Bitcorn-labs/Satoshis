@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({
   loginSection,
 }) => {
   return (
-    <div style={{ marginBottom: '16px' }}>
+    <div style={{ marginBottom: '16px', width: '100%' }}>
       <header>
         <h1>DRAGGIN KARMA POINTS</h1>
         <h1>Paladin Wizard Society</h1>

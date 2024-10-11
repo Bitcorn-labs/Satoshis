@@ -1,4 +1,3 @@
-import './App.css';
 import { useState, useEffect, useRef } from 'react';
 import { Principal } from '@dfinity/principal';
 import ic from 'ic0';
@@ -241,7 +240,7 @@ function App() {
           }
         />
         <Route path="/lair" element={<Lair />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer
         loading={loading}
