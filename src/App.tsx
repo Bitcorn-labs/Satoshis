@@ -14,8 +14,6 @@ import Header from './components/Header';
 import Lair from './Lair';
 import Keep from './Keep';
 
-import one from '/character1.jpg';
-
 function App() {
   const [loading, setLoading] = useState(false);
   // const [icpBalance, setIcpBalance] = useState<bigint>(0n);
