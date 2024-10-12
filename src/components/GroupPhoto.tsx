@@ -16,7 +16,7 @@ const GroupPhoto = () => {
     'corntoshi.webp',
     'snassy.webp',
     'jogu.webp',
-    'radu.webp',
+    'radude.webp',
     'stipe.webp',
     'wizardly-frog.webp',
     'shilliam.webp',
@@ -36,6 +36,7 @@ const GroupPhoto = () => {
     'infu.webp',
     'JR.webp',
     'contractor33.webp',
+    '889.webp',
     'those-forgotten.webp',
   ];
 

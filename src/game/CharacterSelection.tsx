@@ -33,7 +33,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     'snassy.webp',
     'jogu.webp',
     '*egido.webp',
-    'radu.webp',
+    'radude.webp',
     'stipe.webp',
     'wizardly-frog.webp',
     'shilliam.webp',
@@ -53,6 +53,7 @@ const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     'infu.webp',
     'JR.webp',
     'contractor33.webp',
+    '889.webp',
     'those-forgotten.webp',
   ];
 
