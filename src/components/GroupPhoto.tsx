@@ -4,6 +4,7 @@ const GroupPhoto = () => {
     'egido.webp',
     'drogo.webp',
     'ysmys.webp',
+    'bort.webp',
     'borovan.webp',
     'smugandcomfy.webp',
     'thyssa.webp',
