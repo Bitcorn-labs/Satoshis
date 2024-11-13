@@ -8,22 +8,12 @@ import TokenObject from "../utils/TokenObject";
 interface TransactionBoxProps {
   loading: boolean;
   setLoading: (value: boolean) => void;
-  // tokenActor: bobService | reBobService | null;
-  // tokenFee: bigint;
-  // tokenTicker: string;
-  // tokenDecimals: number;
-  // tokenLedgerBalance: bigint;
   token: TokenObject;
 }
 
 const TransactionBox: React.FC<TransactionBoxProps> = ({
   loading,
   setLoading,
-  // tokenActor,
-  // tokenFee,
-  // tokenTicker,
-  // tokenDecimals,
-  // tokenLedgerBalance,
   token,
 }) => {
   const [transactionFieldValue, setTransactionFieldValue] =
@@ -49,37 +39,6 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
 
     console.log({ amountInE8s, toPrincipal });
 
-    // try {
-    //   // Call the token actor's icrc1_transfer function
-    //   const result = await token.actor.icrc1_transfer({
-    //     amount: amountInE8s, // The amount to transfer (must be a bigint)
-    //     to: {
-    //       owner: toPrincipal, // The recipient's principal
-    //       subaccount: [], // Optional, an empty array for no subaccount
-    //     },
-    //     fee: [token.fee], // Optional fee, default is empty
-    //     memo: [], // Optional memo, default is empty
-    //     from_subaccount: [], // Optional, if you want to specify a subaccount
-    //     created_at_time: [BigInt(Date.now()) * 1000000n],
-    //   });
-
-    //   console.log({ result });
-    //   // Handle the result
-    //   if ('Ok' in result) {
-    //     console.log(`Transfer successful! Transaction ID: ${result.Ok}`);
-    //     return result.Ok;
-    //   } else if ('Err' in result) {
-    //     console.error('Transfer failed:', result.Err);
-    //     return result.Err;
-    //   }
-    // } catch (error) {
-    //   console.error('Error during token transfer:', error);
-    //   throw error;
-    // } finally {
-    //   cleanUp();
-    //   setTransactionFieldValue('');
-    //   setPrincipalField('');
-    // }
     try {
       token.transfer(amountInE8s, toPrincipal);
       setTransactionFieldValue("");
@@ -111,7 +70,6 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
           ) // Convert to Nat
         : 0n;
 
-    // console.log(bobNatValue);
     setButtonDisabled(natValue + token.fee > token.ledgerBalance);
 
     setTextFieldValueTooLow(natValue < token.fee);

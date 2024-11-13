@@ -18,14 +18,11 @@ import ICRC2 "mo:icrc2-mo/ICRC2";
 import ICRC3 "mo:icrc3-mo/";
 import ICRC4 "mo:icrc4-mo/ICRC4";
 
-///ckBTC Token
+///Bob Token
 import Types "Types";
 import Blob "mo:base/Blob";
 import Int "mo:base/Int";
 import ICPTypes "ICPTypes";
-
-//game variables
-import Array "mo:base/Array";
 
 shared ({ caller = _owner }) actor class Token(
   args : ?{
@@ -39,32 +36,25 @@ shared ({ caller = _owner }) actor class Token(
   let Set = ICRC1.Set;
   let Map = ICRC1.Map;
 
+  let CKBTCFee = 10;
+
   //let ICPLedger : ICPTypes.Service = actor ("ryjl3-tyaaa-aaaaa-aaaba-cai");
-  let CKBTCLedger : ICPTypes.Service = actor ("mxzaz-hqaaa-aaaar-qaada-cai"); //ic0
-  // let backendCanisterID : String = "hjfd4-eqaaa-aaaam-adkmq-cai"; // ic0
-  // let CKBTCLedger : ICPTypes.Service = actor ("bd3sg-teaaa-aaaaa-qaaba-cai"); // local
+  //let BOBLedger : ICPTypes.Service = actor ("7pail-xaaaa-aaaas-aabmq-cai");
 
   type Account = ICRC1.Account;
 
-  let settings : Types.Settings = {
-    btc_fee_d8 = 10;
-    sats_fee_d8 = 10;
-    btc_swap_fee_d8 = 10; // Fee of 10 ckBTC when swapping to SATS
-    conversion_factor = 1_0000_0000; // 1 BTC = 100,000,000 SATS
-  };
-
   let default_icrc1_args : ICRC1.InitArgs = {
-    name = ?"Satoshi Division";
-    symbol = ?"SATS";
-    logo = ?"data:image/jpg;base64,NEEDNEWLOGO"; // Need a new logo...
+    name = ?"fakeCKBTC";
+    symbol = ?"fckBTC";
+    logo = ?"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ2IiBoZWlnaHQ9IjE0NiIgdmlld0JveD0iMCAwIDE0NiAxNDYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNDYiIGhlaWdodD0iMTQ2IiByeD0iNzMiIGZpbGw9IiMzQjAwQjkiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNi4zODM3IDc3LjIwNTJDMTguNDM0IDEwNS4yMDYgNDAuNzk0IDEyNy41NjYgNjguNzk0OSAxMjkuNjE2VjEzNS45MzlDMzcuMzA4NyAxMzMuODY3IDEyLjEzMyAxMDguNjkxIDEwLjA2MDUgNzcuMjA1MkgxNi4zODM3WiIgZmlsbD0idXJsKCNwYWludDBfbGluZWFyXzExMF81NzIpIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNjguNzY0NiAxNi4zNTM0QzQwLjc2MzggMTguNDAzNiAxOC40MDM3IDQwLjc2MzcgMTYuMzUzNSA2OC43NjQ2TDEwLjAzMDMgNjguNzY0NkMxMi4xMDI3IDM3LjI3ODQgMzcuMjc4NSAxMi4xMDI2IDY4Ljc2NDYgMTAuMDMwMkw2OC43NjQ2IDE2LjM1MzRaIiBmaWxsPSIjMjlBQkUyIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTI5LjYxNiA2OC43MzQzQzEyNy41NjYgNDAuNzMzNSAxMDUuMjA2IDE4LjM3MzQgNzcuMjA1MSAxNi4zMjMyTDc3LjIwNTEgMTBDMTA4LjY5MSAxMi4wNzI0IDEzMy44NjcgMzcuMjQ4MiAxMzUuOTM5IDY4LjczNDNMMTI5LjYxNiA2OC43MzQzWiIgZmlsbD0idXJsKCNwYWludDFfbGluZWFyXzExMF81NzIpIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNzcuMjM1NCAxMjkuNTg2QzEwNS4yMzYgMTI3LjUzNiAxMjcuNTk2IDEwNS4xNzYgMTI5LjY0NyA3Ny4xNzQ5TDEzNS45NyA3Ny4xNzQ5QzEzMy44OTcgMTA4LjY2MSAxMDguNzIyIDEzMy44MzcgNzcuMjM1NCAxMzUuOTA5TDc3LjIzNTQgMTI5LjU4NloiIGZpbGw9IiMyOUFCRTIiLz4KPHBhdGggZD0iTTk5LjgyMTcgNjQuNzI0NUMxMDEuMDE0IDU2Ljc1MzggOTQuOTQ0NyA1Mi40Njg5IDg2LjY0NTUgNDkuNjEwNEw4OS4zMzc2IDM4LjgxM0w4Mi43NjQ1IDM3LjE3NUw4MC4xNDM1IDQ3LjY4NzlDNzguNDE1NSA0Ny4yNTczIDc2LjY0MDYgNDYuODUxMSA3NC44NzcxIDQ2LjQ0ODdMNzcuNTE2OCAzNS44NjY1TDcwLjk0NzQgMzQuMjI4NUw2OC4yNTM0IDQ1LjAyMjJDNjYuODIzIDQ0LjY5NjUgNjUuNDE4OSA0NC4zNzQ2IDY0LjA1NiA0NC4wMzU3TDY0LjA2MzUgNDQuMDAyTDU0Ljk5ODUgNDEuNzM4OEw1My4yNDk5IDQ4Ljc1ODZDNTMuMjQ5OSA0OC43NTg2IDU4LjEyNjkgNDkuODc2MiA1OC4wMjM5IDQ5Ljk0NTRDNjAuNjg2MSA1MC42MSA2MS4xNjcyIDUyLjM3MTUgNjEuMDg2NyA1My43NjhDNTguNjI3IDYzLjYzNDUgNTYuMTcyMSA3My40Nzg4IDUzLjcxMDQgODMuMzQ2N0M1My4zODQ3IDg0LjE1NTQgNTIuNTU5MSA4NS4zNjg0IDUwLjY5ODIgODQuOTA3OUM1MC43NjM3IDg1LjAwMzQgNDUuOTIwNCA4My43MTU1IDQ1LjkyMDQgODMuNzE1NUw0Mi42NTcyIDkxLjIzODlMNTEuMjExMSA5My4zNzFDNTIuODAyNSA5My43Njk3IDU0LjM2MTkgOTQuMTg3MiA1NS44OTcxIDk0LjU4MDNMNTMuMTc2OSAxMDUuNTAxTDU5Ljc0MjYgMTA3LjEzOUw2Mi40MzY2IDk2LjMzNDNDNjQuMjMwMSA5Ni44MjEgNjUuOTcxMiA5Ny4yNzAzIDY3LjY3NDkgOTcuNjkzNEw2NC45OTAyIDEwOC40NDhMNzEuNTYzNCAxMTAuMDg2TDc0LjI4MzYgOTkuMTg1M0M4NS40OTIyIDEwMS4zMDYgOTMuOTIwNyAxMDAuNDUxIDk3LjQ2ODQgOTAuMzE0MUMxMDAuMzI3IDgyLjE1MjQgOTcuMzI2MSA3Ny40NDQ1IDkxLjQyODggNzQuMzc0NUM5NS43MjM2IDczLjM4NDIgOTguOTU4NiA3MC41NTk0IDk5LjgyMTcgNjQuNzI0NVpNODQuODAzMiA4NS43ODIxQzgyLjc3MiA5My45NDM4IDY5LjAyODQgODkuNTMxNiA2NC41NzI3IDg4LjQyNTNMNjguMTgyMiA3My45NTdDNzIuNjM4IDc1LjA2ODkgODYuOTI2MyA3Ny4yNzA0IDg0LjgwMzIgODUuNzgyMVpNODYuODM2NCA2NC42MDY2Qzg0Ljk4MyA3Mi4wMzA3IDczLjU0NDEgNjguMjU4OCA2OS44MzM1IDY3LjMzNEw3My4xMDYgNTQuMjExN0M3Ni44MTY2IDU1LjEzNjQgODguNzY2NiA1Ni44NjIzIDg2LjgzNjQgNjQuNjA2NloiIGZpbGw9IndoaXRlIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMTEwXzU3MiIgeDE9IjUzLjQ3MzYiIHkxPSIxMjIuNzkiIHgyPSIxNC4wMzYyIiB5Mj0iODkuNTc4NiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBvZmZzZXQ9IjAuMjEiIHN0b3AtY29sb3I9IiNFRDFFNzkiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNTIyNzg1Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQxX2xpbmVhcl8xMTBfNTcyIiB4MT0iMTIwLjY1IiB5MT0iNTUuNjAyMSIgeDI9IjgxLjIxMyIgeTI9IjIyLjM5MTQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agb2Zmc2V0PSIwLjIxIiBzdG9wLWNvbG9yPSIjRjE1QTI0Ii8+CjxzdG9wIG9mZnNldD0iMC42ODQxIiBzdG9wLWNvbG9yPSIjRkJCMDNCIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+Cg==";
     decimals = 8;
-    fee = ? #Fixed(settings.sats_fee_d8);
+    fee = ? #Fixed(CKBTCFee);
     minting_account = ?{
       owner = _owner;
       subaccount = null;
     };
     max_supply = null;
-    min_burn_amount = ?10;
+    min_burn_amount = ?CKBTCFee;
     max_memo = ?32;
     advanced_settings = null;
     metadata = null;
@@ -92,7 +82,8 @@ shared ({ caller = _owner }) actor class Token(
     archiveIndexType = #Stable;
     maxRecordsToArchive = 8000;
     archiveCycles = 6_000_000_000_000;
-    archiveControllers = null; //??[put cycle ops prinicpal here];
+
+    archiveControllers = null; //[?Principal.fromText("5vdms-kaaaa-aaaap-aa3uq-cai")]; //??[put cycle ops prinicpal here]; //5vdms-kaaaa-aaaap-aa3uq-cai
     supportedBlocks = [
       {
         block_type = "1xfer";
@@ -368,6 +359,43 @@ shared ({ caller = _owner }) actor class Token(
     return cert_store;
   };
 
+  // custom function to mint myself tokens for testing:
+  public shared ({ caller }) func mint_tokens() : async Result.Result<(Nat, Nat), Text> {
+    let mintingAmount : Nat = 10_0000_0000;
+    let newtokens = await* icrc1().mint_tokens(
+      icrc1().get_state().minting_account.owner,
+      {
+        to = {
+          owner = caller;
+          subaccount = null;
+        };
+        amount = mintingAmount; // The number of tokens to mint.
+        created_at_time = ?time64();
+        memo = ?("\73\65\6c\66\20\6d\69\6e\74\20\66\6f\72\20\74\65\73\74" : Blob); //"self mint for test"
+      },
+    );
+
+    let mint = switch (newtokens) {
+      case (#trappable(#Ok(val))) val;
+      case (#awaited(#Ok(val))) val;
+      case (#trappable(#Err(err))) {
+        return #err(debug_show (err));
+
+      };
+      case (#awaited(#Err(err))) {
+        return #err(debug_show (err));
+      };
+      case (#err(#trappable(err))) {
+        return #err(debug_show (err));
+      };
+      case (#err(#awaited(err))) {
+        return #err(debug_show (err));
+      };
+    };
+
+    return #ok((mint, mint));
+  };
+
   /// Functions for the ICRC1 token standard
   public shared query func icrc1_name() : async Text {
     icrc1().name();
@@ -422,7 +450,7 @@ shared ({ caller = _owner }) actor class Token(
     Nat64.fromNat(Int.abs(Time.now()));
   };
 
-  // let ONE_DAY = 86_400_000_000_000;
+  let ONE_DAY = 86_400_000_000_000;
 
   stable var lastError : (Text, Int) = ("null", 0);
 
@@ -433,191 +461,25 @@ shared ({ caller = _owner }) actor class Token(
     lastError;
   };
 
-  private func refund(caller : Principal, subaccount : ?[Nat8], amount : Nat, e : Text) : async* Result.Result<(Nat, Nat), Text> {
-    try {
-      let result = await CKBTCLedger.icrc1_transfer({
-        from_subaccount = null;
-        fee = null;
-        to = {
-          owner = caller;
-          subaccount = subaccount;
-        };
-        memo = ?Blob.toArray("\63\6b\42\54\43\20\72\65\74\75\72\6e" : Blob); // ckBTC return
-        created_at_time = ?time64();
-        amount = amount;
-      });
-    } catch (e) {
-      return #err("stuck funds");
-    };
+  // private func refund(caller: Principal, subaccount: ?[Nat8], amount: Nat, e : Text) : async* Result.Result<(Nat, Nat), Text> {
+  //   try{
+  //     let result = await BOBLedger.icrc1_transfer({
+  //       from_subaccount = null;
+  //       fee = ?10_000;
+  //       to = {
+  //         owner = caller;
+  //         subaccount = subaccount;
+  //       };
+  //       memo = ?Blob.toArray("\98\5c\db\3b\74\ce\88\61\3a\35\ee\2e\0e\39\a9\f6\c5\1d\ee\e9\ea\53\89\2d\e8\da\53\da\de\46\57\64" : Blob); //"Bob Return"
+  //       created_at_time = ?time64();
+  //       amount = amount;
+  //     });
+  //   } catch(e){
+  //     return #err("stuck funds");
+  //   };
 
-    return #err("cannot transfer to minter " # e);
-  };
-
-  public shared ({ caller }) func deposit(subaccount : ?[Nat8], amount : Nat) : async Result.Result<(Nat, Nat), Text> {
-    log.add(debug_show (Time.now()) # "trying deposit " # debug_show (subaccount));
-
-    if (amount < settings.btc_fee_d8) {
-      return #err("amount too low");
-    };
-
-    let result = try {
-      await CKBTCLedger.icrc2_transfer_from({
-        to = {
-          owner = Principal.fromActor(this);
-          subaccount = null;
-        };
-        fee = null;
-        spender_subaccount = null;
-        from = {
-          owner = caller;
-          subaccount = subaccount;
-        };
-        memo = ?Blob.toArray("\63\6b\42\54\43\20\64\65\70\6f\73\69\74" : Blob); // ckBTC deposit
-        created_at_time = ?time64();
-        amount = amount;
-      });
-    } catch (e) {
-      log.add(debug_show (Time.now()) # "trying transfer from " # Error.message(e));
-      D.trap("cannot transfer from failed" # Error.message(e));
-    };
-
-    let block = switch (result) {
-      case (#Ok(block)) block;
-      case (#Err(err)) {
-        D.trap("cannot transfer from failed" # debug_show (err));
-      };
-    };
-
-    //let mintingAmount = amount;
-    let mintingAmount = Int.abs((amount - settings.btc_swap_fee_d8) * settings.conversion_factor);
-
-    let newtokens = await* icrc1().mint_tokens(
-      icrc1().get_state().minting_account.owner,
-      {
-        to = {
-          owner = caller;
-          subaccount = switch (subaccount) {
-            case (null) null;
-            case (?val) ?Blob.fromArray(val);
-          };
-        };
-        amount = mintingAmount; // The number of tokens to mint.
-        created_at_time = ?time64();
-        memo = ?("\53\41\54\53\20\4d\69\6e\74" : Blob); // SATS Mint
-      },
-    );
-
-    log.add(debug_show (Time.now()) # "trying mint from mint " # debug_show (newtokens));
-
-    let mint = switch (newtokens) {
-      case (#trappable(#Ok(val))) val;
-      case (#awaited(#Ok(val))) val;
-      case (#trappable(#Err(err))) {
-        return await* refund(caller, subaccount, amount, debug_show (err));
-
-      };
-      case (#awaited(#Err(err))) {
-        return await* refund(caller, subaccount, amount, debug_show (err));
-      };
-      case (#err(#trappable(err))) {
-        return await* refund(caller, subaccount, amount, debug_show (err));
-      };
-      case (#err(#awaited(err))) {
-        return await* refund(caller, subaccount, amount, debug_show (err));
-      };
-    };
-
-    return #ok((block, mint));
-  };
-
-  public shared ({ caller }) func withdraw(subaccount : ?[Nat8], amount : Nat) : async Result.Result<(Nat, Nat), Text> {
-    log.add(debug_show (Time.now()) # "trying withdraw " # debug_show (subaccount));
-
-    if (amount <= (settings.btc_fee_d8 * 2)) {
-      // Accounting for sending ckBTC to the user from this canister. We pay the fee.
-      return #err("amount too low");
-    };
-
-    let burnResult = await* icrc1().burn(
-      caller,
-      {
-        from_subaccount = switch (subaccount) {
-          case (null) null;
-          case (?val) ?Blob.fromArray(val);
-        }; // The subaccount from which tokens are burned.
-        amount = amount; // The number of tokens to burn.
-        memo = ?("\53\41\54\53\20\57\69\74\68\64\72\61\77" : Blob); // SATS Withdraw
-        created_at_time = ?time64(); // The time the burn operation was created.
-      },
-    );
-
-    let parse = switch (burnResult) {
-      case (#Ok(val)) val;
-      case (#Err((err))) return #err(debug_show (err));
-    };
-
-    //let old_balance_d8 : T.Balance = Int.abs(old_balance_d12 / settings.d8_to_d12); // from sneed swap
-    let returnAmount = Int.abs((amount - settings.btc_fee_d8) / settings.conversion_factor); // hope this work
-
-    let result = try {
-      await CKBTCLedger.icrc1_transfer({
-        to = {
-          owner = caller;
-          subaccount = subaccount;
-        };
-        fee = null;
-        from_subaccount = null;
-        memo = ?Blob.toArray("\53\41\54\53\20\57\69\74\68\64\72\61\77"); // SATS Withdraw
-        created_at_time = ?time64();
-        amount = returnAmount;
-      });
-    } catch (e) {
-      //put back
-
-      let remintResult = await* icrc1().mint(
-        caller,
-        {
-          to = {
-            owner = caller;
-            subaccount = switch (subaccount) {
-              case (null) null;
-              case (?val) ?Blob.fromArray(val);
-            }; // The subaccount from which tokens are burned.
-          };
-          amount = amount; // The number of tokens to burn.
-          memo = ?("\53\41\54\53\20\57\69\74\68\64\72\61\77" : Blob); // SATS Withdraw
-          created_at_time = ?time64(); // The time the burn operation was created.
-        },
-      );
-      log.add(debug_show (Time.now()) # "trying withdraw from " # Error.message(e));
-      return #err("cannot withdraw - failed and refunded " # Error.message(e));
-    };
-
-    let block = switch (result) {
-      case (#Ok(block)) block;
-      case (#Err(err)) {
-        let remintResult = await* icrc1().mint(
-          caller,
-          {
-            to = {
-              owner = caller;
-              subaccount = switch (subaccount) {
-                case (null) null;
-                case (?val) ?Blob.fromArray(val);
-              }; // The subaccount from which tokens are burned.
-            };
-            amount = amount; // The number of tokens to burn.
-            memo = ?("\53\41\54\53\20\57\69\74\68\64\72\61\77" : Blob); // SATS Withdraw
-            created_at_time = ?time64(); // The time the burn operation was created.
-          },
-        );
-        log.add(debug_show (Time.now()) # "trying withdraw from " # debug_show (err));
-        return #err("cannot withdraw - failed" # debug_show (err));
-      };
-    };
-
-    return #ok((parse, block));
-  };
+  //   return #err("cannot transfer to minter " # e);
+  // };
 
   public type Stats = {
     totalSupply : Nat;
@@ -664,7 +526,7 @@ shared ({ caller = _owner }) actor class Token(
         case (?val) val;
       };
       let maxSearch = switch (max) {
-        case (null) 1_000_000_0000_0000_0000_0000; // 1 Million BTC max.
+        case (null) 20_000_000_0000_0000; //our max supply is far less than 20M
         case (?val) val;
       };
       if (thisAccount.1 >= minSearch and thisAccount.1 <= maxSearch) ICRC1.Vector.add(results, (thisAccount.0, thisAccount.1));
@@ -772,28 +634,28 @@ shared ({ caller = _owner }) actor class Token(
 
   }; */
 
-  // private stable var _init = false;
-  // public shared(msg) func admin_init() : async () {
-  //   //can only be called once
+  private stable var _init = false;
+  public shared (msg) func admin_init() : async () {
+    //can only be called once
 
-  //   if(_init == false){
-  //     //ensure metadata has been registered
-  //     let test1 = icrc1().metadata();
-  //     let test2 = icrc2().metadata();
-  //     let test4 = icrc4().metadata();
-  //     let test3 = icrc3().stats();
+    if (_init == false) {
+      //ensure metadata has been registered
+      let test1 = icrc1().metadata();
+      let test2 = icrc2().metadata();
+      let test4 = icrc4().metadata();
+      let test3 = icrc3().stats();
 
-  //     //uncomment the following line to register the transfer_listener
-  //     //icrc1().register_token_transferred_listener("my_namespace", transfer_listener);
+      //uncomment the following line to register the transfer_listener
+      //icrc1().register_token_transferred_listener("my_namespace", transfer_listener);
 
-  //     //uncomment the following line to register the transfer_listener
-  //     //icrc2().register_token_approved_listener("my_namespace", approval_listener);
+      //uncomment the following line to register the transfer_listener
+      //icrc2().register_token_approved_listener("my_namespace", approval_listener);
 
-  //     //uncomment the following line to register the transfer_listener
-  //     //icrc1().register_transfer_from_listener("my_namespace", transfer_from_listener);
-  //   };
-  //   _init := true;
-  // };
+      //uncomment the following line to register the transfer_listener
+      //icrc1().register_transfer_from_listener("my_namespace", transfer_from_listener);
+    };
+    _init := true;
+  };
 
   let log = Buffer.Buffer<Text>(1);
 
@@ -820,10 +682,10 @@ shared ({ caller = _owner }) actor class Token(
       D.trap("Only the canister can initialize the canister");
     };
     log.add(debug_show (Time.now()) # "In init ");
-    ignore icrc1().metadata();
-    ignore icrc2().metadata();
-    ignore icrc3().stats();
-    ignore icrc4().metadata();
+    ignore icrc1();
+    ignore icrc2();
+    ignore icrc3();
+    ignore icrc4();
   };
 
   ignore Timer.setTimer<system>(
@@ -836,56 +698,16 @@ shared ({ caller = _owner }) actor class Token(
     },
   );
 
-  system func preupgrade() {
-    stable_winners := winners;
-  };
-
   system func postupgrade() {
-    ignore icrc1().init_metadata();
-    winners := stable_winners;
+    //re wire up the listener after upgrade
+    //uncomment the following line to register the transfer_listener
+    //icrc1().register_token_transferred_listener("bobminter", transfer_listener);
+
+    //uncomment the following line to register the transfer_listener
+    //icrc2().register_token_approved_listener("my_namespace", approval_listener);
+
+    //uncomment the following line to register the transfer_listener
+    //icrc1().register_transfer_from_listener("my_namespace", transfer_from_listener);
   };
 
-  stable var stable_winners : [Principal] = [];
-
-  var winners : [Principal] = [];
-
-  public shared (msg) func setGameCompleted() : async () {
-    if (msg.caller == Principal.fromText("2vxsx-fae")) return;
-
-    let found : ?Principal = Array.find<Principal>(
-      winners,
-      func(p : Principal) : Bool {
-        return p == msg.caller;
-      },
-    );
-
-    if (found == null) {
-      // Add caller to winners if not already present
-      winners := Array.append<Principal>(winners, [msg.caller]);
-    };
-  };
-
-  // public func deleteWinners() : async () {
-  //   winners := [];
-  // };
-
-  public query func didPrincipalWin(principal : Principal) : async Bool {
-    let found : ?Principal = Array.find<Principal>(
-      winners,
-      func(p : Principal) : Bool {
-        return p == principal;
-      },
-    );
-    return found != null;
-  };
-
-  //re wire up the listener after upgrade
-  //uncomment the following line to register the transfer_listener
-  //icrc1().register_token_transferred_listener("bobminter", transfer_listener);
-
-  //uncomment the following line to register the transfer_listener
-  //icrc2().register_token_approved_listener("my_namespace", approval_listener);
-
-  //uncomment the following line to register the transfer_listener
-  //icrc1().register_transfer_from_listener("my_namespace", transfer_from_listener);
 };

@@ -30,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({
       />
       <footer>
         <p>Powered by the Internet Computer</p>
-        <p>&copy; 2024 Bitcorn Labs — DKP DPW Society </p>
+        <p>&copy; 2024 Bitcoin, Corntoshis Vision. All Rights Reserved. </p>
         <p>
           Disclaimer: This site does not contain investment advice. All
           information found on this site can be inaccurate, and is presented for

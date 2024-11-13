@@ -7,9 +7,9 @@
         "node_compatibility": true
       }
     },
-    "fakedkp": {
+    "fakeckbtc": {
       "type": "motoko",
-      "main": "backend/FakeDkp.mo",
+      "main": "backend/FakeCKBTC.mo",
       "declarations": {
         "node_compatibility": true
       }

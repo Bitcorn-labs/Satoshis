@@ -10,10 +10,9 @@ module {
   public type Balance = Nat;
 
   public type Settings = {
-    dkp_fee_d8 : Balance;
-    dpw_fee_d12 : Balance;
-    dkp_swap_fee_d8 : Balance;
-    d8_to_d12 : Int;
+    btc_fee_d8 : Balance;
+    sats_fee_d8 : Balance;
+    btc_swap_fee_d8 : Balance;
     conversion_factor : Nat;
   };
 };

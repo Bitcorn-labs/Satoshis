@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { TextField, ThemeProvider } from "@mui/material";
 import theme from "../theme";
 import bigintToFloatString from "../utils/bigIntToFloatString";
-// import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
-// import { _SERVICE as reBobService } from '../declarations/service_hack/service';
 import ShowTransactionStatus from "./ShowTransactionStatus";
 import TokenObject from "../utils/TokenObject";
 
@@ -30,7 +28,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
-  const minimumTransactionAmount: bigint = outputToken.fee * 4n;
+  const minimumTransactionAmount: bigint = inputToken.fee * 10_0000_0000n * 4n;
 
   const handleWithdrawl = async () => {
     if (!isConnected) {
@@ -162,7 +160,6 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
           )
         : 0n;
 
-    // console.log(bobNatValue);
     setButtonDisabled(
       outputNatValue + outputToken.fee * 1n > outputToken.ledgerBalance
     );

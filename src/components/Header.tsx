@@ -14,8 +14,6 @@ interface HeaderProps {
   setConnectionType: (value: string) => void;
   loggedInPrincipal: string;
   setLoggedInPrincipal: (value: string) => void;
-  gameCompleted: boolean;
-  loginSection: RefObject<HTMLDivElement>;
 }
 const Header: React.FC<HeaderProps> = ({
   inputTokenObject,
@@ -28,40 +26,20 @@ const Header: React.FC<HeaderProps> = ({
   setConnectionType,
   loggedInPrincipal,
   setLoggedInPrincipal,
-  gameCompleted,
-  loginSection,
 }) => {
   return (
     <div style={{ marginBottom: "16px", width: "100%" }}>
       <header>
-        <h1>DRAGGIN KARMA POINTS</h1>
-        <h1>Paladin Wizard Society</h1>
-        <h2>
-          Use your karma points to unleash your inner Dragon Paladin Wizard
-        </h2>
+        <div className="navbar">
+          <a href="#introduction">Introduction</a>
+          <a href="#why-bitcoin">Why Bitcoin</a>
+          <a href="#how-bitcoin-works">How Bitcoin Works</a>
+          <a href="#internet-computer">Internet Computer</a>
+          <a href="#chain-key-tech">Chain Key Technology</a>
+        </div>
+        <h1>Bitcoin, Corntoshis Vision</h1>
+        <button className="cta-button">Learn More</button>
       </header>
-      <div className="container">
-        <div className="image-box">
-          <img src="banner/Paladin.webp" alt="Paladin" />
-          <p>Brave Paladin</p>
-        </div>
-        <div className="image-box">
-          <img src="banner/Borovan.webp" alt="Dragon" />
-          <p>Dragon king</p>
-        </div>
-        <div className="image-box">
-          <img src="banner/Priests.webp" alt="Wizard" />
-          <p>protect your eggs</p>
-        </div>
-        <div className="image-box">
-          <img src="banner/Eggs.webp" alt="Egg" />
-          <p>draggin karma eggs</p>
-        </div>
-      </div>
-      <div ref={loginSection} className="banner">
-        Dragon Paladin Wizards
-      </div>
-      <h2>{gameCompleted ? "Greetings Champion" : <></>}</h2>
       <PlugLoginHandler
         tokens={[inputTokenObject, outputTokenObject]}
         loading={loading}

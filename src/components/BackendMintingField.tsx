@@ -33,7 +33,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
-  const extraFee = 25n * BigInt(Math.pow(10, inputToken.decimals));
+  const extraFee = 10n;
 
   const minimumTransactionAmount: bigint = inputToken.fee * 4n + extraFee;
 

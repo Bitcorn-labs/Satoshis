@@ -12,10 +12,10 @@ fi
 dfx identity use $ACCOUNT1
 
 # Mint tokens
-dfx canister call $CANISTER_ID_FAKEDKP mint_tokens
+dfx canister call $CANISTER_ID_FAKECKBTC mint_tokens
 
 # Transfer tokens to the stored principal
-dfx canister call $CANISTER_ID_FAKEDKP icrc1_transfer "(record {
+dfx canister call $CANISTER_ID_FAKECKBTC icrc1_transfer "(record {
     to = record { 
         owner = principal \"$PLUG_PRINCIPAL\"; 
         subaccount = null 
@@ -26,10 +26,10 @@ dfx canister call $CANISTER_ID_FAKEDKP icrc1_transfer "(record {
 })"
 
 # Mint tokens
-dfx canister call $CANISTER_ID_FAKEDKP mint_tokens
+dfx canister call $CANISTER_ID_FAKECKBTC mint_tokens
 
 # Transfer tokens to the stored principal
-dfx canister call $CANISTER_ID_FAKEDKP icrc1_transfer "(record {
+dfx canister call $CANISTER_ID_FAKECKBTC icrc1_transfer "(record {
     to = record { 
         owner = principal \"$INTERNET_IDENTITY_PRINCIPAL\"; 
         subaccount = null 

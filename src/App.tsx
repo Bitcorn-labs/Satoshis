@@ -1,18 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Principal } from "@dfinity/principal";
 import ic from "ic0";
 import { Stats } from "./declarations/backend/backend.did.d";
 
 import bigintToFloatString from "./utils/bigIntToFloatString";
 import TokenObject from "./utils/TokenObject";
-import CharacterSelection from "./game/CharacterSelection";
 import { Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import NotFound from "./NotFound";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
-import Lair from "./Lair";
-import Keep from "./Keep";
+import Swap from "./Swap";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -25,30 +23,25 @@ function App() {
   const [connectionType, setConnectionType] = useState<string>("");
 
   const [totalInputTokenHeld, setTotalInputTokenHeld] = useState<string>("");
-  // const [totalReBobMinted, setTotalReBobMinted] = useState<string>('');
 
   const [loggedInPrincipal, setLoggedInPrincipal] = useState("");
 
-  const [gameCompleted, setGameCompleted] = useState<boolean>(false);
-
   const inputTokenDetails = {
-    fee: 100_000n,
-    ticker: "dkp",
+    fee: 10n,
+    ticker: "ckBTC",
     decimals: 8,
     canisterId:
       process.env.DFX_NETWORK === "local"
         ? "bd3sg-teaaa-aaaaa-qaaba-cai"
-        : "zfcdd-tqaaa-aaaaq-aaaga-cai",
+        : "mxzaz-hqaaa-aaaar-qaada-cai",
   };
 
   const outputTokenDetails = {
-    fee: 1250n,
-    ticker: "dpw",
-    decimals: 12,
+    fee: 10n,
+    ticker: "SATS",
+    decimals: 8,
     canisterId:
-      process.env.DFX_NETWORK === "local"
-        ? "bkyz2-fmaaa-aaaaa-qaaaq-cai"
-        : "hjfd4-eqaaa-aaaam-adkmq-cai",
+      process.env.DFX_NETWORK === "local" ? "bkyz2-fmaaa-aaaaa-qaaaq-cai" : "", // tbd
   };
 
   const [inputTokenObject, setInputTokenObject] = useState<TokenObject>(
@@ -86,19 +79,9 @@ function App() {
         subaccount: [],
       }
     );
-    // //const totalReBobMintedResponse = await reBobActor.icrc1_total_supply();
     setTotalInputTokenHeld(
       bigintToFloatString(totalInputTokenResponse, inputTokenObject.decimals)
     );
-    // setTotalReBobMinted(bigintToFloatString(totalReBobMintedResponse));
-  };
-
-  const checkGameCompleted = async () => {
-    const response = await outputTokenObject.checkGameCompleted();
-    if (response) {
-      setGameCompleted(response); // I don't want to set it to false.
-    }
-    console.log({ response, gameCompleted });
   };
 
   useEffect(() => {
@@ -125,22 +108,6 @@ function App() {
     );
   }, []); // Dependency array remains empty if you only want this effect to run once on component mount
 
-  useEffect(() => {
-    if (!isConnected || !outputTokenObject.actor) return;
-    checkGameCompleted();
-
-    if (gameCompleted) {
-      console.log("game completed and setting via outputTokenObject");
-      // call backend to complete the game.
-      const test = outputTokenObject.setGameCompleted();
-    }
-  }, [gameCompleted, isConnected, outputTokenObject]);
-
-  useEffect(() => {
-    if (!outputTokenObject.actor) return;
-    checkGameCompleted();
-  }, [outputTokenObject]);
-
   const fetchStats = async () => {
     if (outputTokenObject.actor !== null) {
       const stats = await outputTokenObject.actor.stats();
@@ -149,29 +116,12 @@ function App() {
     }
   };
 
-  // const isValidPrincipal = (principalString: string): boolean => {
-  //   try {
-  //     Principal.fromText(principalString);
-  //     return true;
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
-
   const fetchBalances = async () => {
     fetchTotalTokens();
 
     if (!isConnected) return;
     inputTokenObject.getLedgerBalance();
     outputTokenObject.getLedgerBalance();
-  };
-
-  const loginSection = useRef<HTMLDivElement | null>(null);
-
-  const handleScrollToLogin = () => {
-    if (loginSection.current) {
-      loginSection.current.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   return (
@@ -201,30 +151,17 @@ function App() {
         setConnectionType={setConnectionType}
         loggedInPrincipal={loggedInPrincipal}
         setLoggedInPrincipal={setLoggedInPrincipal}
-        gameCompleted={gameCompleted}
-        loginSection={loginSection}
       />
       <Routes>
         <Route
           path="/"
           element={<Home totalInputTokenHeld={totalInputTokenHeld} />}
         />
+
         <Route
-          path="/game"
+          path="/swap"
           element={
-            <CharacterSelection
-              setGameCompleted={setGameCompleted}
-              gameCompleted={gameCompleted}
-              isConnected={isConnected}
-              handleScrollToLogin={handleScrollToLogin}
-            />
-          }
-        />
-        <Route
-          path="/keep"
-          element={
-            <Keep
-              gameCompleted={gameCompleted}
+            <Swap
               loading={loading}
               setLoading={setLoading}
               isConnected={isConnected}
@@ -239,7 +176,6 @@ function App() {
             />
           }
         />
-        <Route path="/lair" element={<Lair />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer
