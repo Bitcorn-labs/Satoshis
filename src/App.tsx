@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
-import { Principal } from '@dfinity/principal';
-import ic from 'ic0';
-import { Stats } from './declarations/backend/backend.did.d';
+import { useState, useEffect, useRef } from "react";
+import { Principal } from "@dfinity/principal";
+import ic from "ic0";
+import { Stats } from "./declarations/backend/backend.did.d";
 
-import bigintToFloatString from './bigIntToFloatString';
-import TokenObject from './TokenObject';
-import CharacterSelection from './game/CharacterSelection';
-import { Route, Routes } from 'react-router-dom';
-import Home from './Home';
-import NotFound from './NotFound';
-import Footer from './components/Footer';
-import Header from './components/Header';
-import Lair from './Lair';
-import Keep from './Keep';
+import bigintToFloatString from "./utils/bigIntToFloatString";
+import TokenObject from "./utils/TokenObject";
+import CharacterSelection from "./game/CharacterSelection";
+import { Route, Routes } from "react-router-dom";
+import Home from "./Home";
+import NotFound from "./NotFound";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Lair from "./Lair";
+import Keep from "./Keep";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -22,33 +22,33 @@ function App() {
   const [stats, setStats] = useState<Stats | null>(null);
 
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [connectionType, setConnectionType] = useState<string>('');
+  const [connectionType, setConnectionType] = useState<string>("");
 
-  const [totalInputTokenHeld, setTotalInputTokenHeld] = useState<string>('');
+  const [totalInputTokenHeld, setTotalInputTokenHeld] = useState<string>("");
   // const [totalReBobMinted, setTotalReBobMinted] = useState<string>('');
 
-  const [loggedInPrincipal, setLoggedInPrincipal] = useState('');
+  const [loggedInPrincipal, setLoggedInPrincipal] = useState("");
 
   const [gameCompleted, setGameCompleted] = useState<boolean>(false);
 
   const inputTokenDetails = {
     fee: 100_000n,
-    ticker: 'dkp',
+    ticker: "dkp",
     decimals: 8,
     canisterId:
-      process.env.DFX_NETWORK === 'local'
-        ? 'bd3sg-teaaa-aaaaa-qaaba-cai'
-        : 'zfcdd-tqaaa-aaaaq-aaaga-cai',
+      process.env.DFX_NETWORK === "local"
+        ? "bd3sg-teaaa-aaaaa-qaaba-cai"
+        : "zfcdd-tqaaa-aaaaq-aaaga-cai",
   };
 
   const outputTokenDetails = {
     fee: 1250n,
-    ticker: 'dpw',
+    ticker: "dpw",
     decimals: 12,
     canisterId:
-      process.env.DFX_NETWORK === 'local'
-        ? 'bkyz2-fmaaa-aaaaa-qaaaq-cai'
-        : 'hjfd4-eqaaa-aaaam-adkmq-cai',
+      process.env.DFX_NETWORK === "local"
+        ? "bkyz2-fmaaa-aaaaa-qaaaq-cai"
+        : "hjfd4-eqaaa-aaaam-adkmq-cai",
   };
 
   const [inputTokenObject, setInputTokenObject] = useState<TokenObject>(
@@ -57,7 +57,7 @@ function App() {
       actor: null,
       ledgerBalance: 0n,
       setToken: null,
-      loggedInPrincipal: '',
+      loggedInPrincipal: "",
     })
   );
 
@@ -67,7 +67,7 @@ function App() {
       actor: null,
       ledgerBalance: 0n,
       setToken: null,
-      loggedInPrincipal: '',
+      loggedInPrincipal: "",
     })
   );
 
@@ -77,10 +77,10 @@ function App() {
     //   subaccount: [],
     // }); // Can't use plug actors as anonymous.
     // We will use the internet identity anonymous calls in the next update. ic0 will work for now.
-    if (process.env.DFX_NETWORK === 'local') return;
+    if (process.env.DFX_NETWORK === "local") return;
     const inputIcActor = await ic(inputTokenObject.canisterId); // hard coding this because it will work in local still.
     const totalInputTokenResponse = await inputIcActor.call(
-      'icrc1_balance_of',
+      "icrc1_balance_of",
       {
         owner: Principal.fromText(outputTokenObject.canisterId), // hard coding this because it won't work with local of reBobCanisterID
         subaccount: [],
@@ -110,7 +110,7 @@ function App() {
         actor: null,
         ledgerBalance: 0n,
         setToken: setInputTokenObject,
-        loggedInPrincipal: '',
+        loggedInPrincipal: "",
       })
     );
 
@@ -120,7 +120,7 @@ function App() {
         actor: null,
         ledgerBalance: 0n,
         setToken: setOutputTokenObject,
-        loggedInPrincipal: '',
+        loggedInPrincipal: "",
       })
     );
   }, []); // Dependency array remains empty if you only want this effect to run once on component mount
@@ -130,7 +130,7 @@ function App() {
     checkGameCompleted();
 
     if (gameCompleted) {
-      console.log('game completed and setting via outputTokenObject');
+      console.log("game completed and setting via outputTokenObject");
       // call backend to complete the game.
       const test = outputTokenObject.setGameCompleted();
     }
@@ -170,7 +170,7 @@ function App() {
 
   const handleScrollToLogin = () => {
     if (loginSection.current) {
-      loginSection.current.scrollIntoView({ behavior: 'smooth' });
+      loginSection.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -178,16 +178,16 @@ function App() {
     <div
       className="App"
       style={{
-        display: 'flex', // Enable flexbox
-        flexDirection: 'column', // Optional: stack children vertically
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        minHeight: '100vh', // Make sure it covers the full viewport height
-        textAlign: 'center', // Center text if needed
-        width: '100%',
-        margin: '0',
-        padding: '0',
-        boxSizing: 'border-box',
+        display: "flex", // Enable flexbox
+        flexDirection: "column", // Optional: stack children vertically
+        justifyContent: "center", // Center content vertically
+        alignItems: "center", // Center content horizontally
+        minHeight: "100vh", // Make sure it covers the full viewport height
+        textAlign: "center", // Center text if needed
+        width: "100%",
+        margin: "0",
+        padding: "0",
+        boxSizing: "border-box",
       }}
     >
       <Header

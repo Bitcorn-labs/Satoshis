@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { TextField, ThemeProvider, createTheme } from '@mui/material';
-import theme from '../theme';
-import bigintToFloatString from '../bigIntToFloatString';
+import { useEffect, useState } from "react";
+import { TextField, ThemeProvider, createTheme } from "@mui/material";
+import theme from "../theme";
+import bigintToFloatString from "../utils/bigIntToFloatString";
 // import { Principal } from '@dfinity/principal';
 // import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
 // import { _SERVICE as reBobService } from '../declarations/service_hack/service';
-import ShowTransactionStatus from './ShowTransactionStatus';
-import TokenObject from '../TokenObject';
+import ShowTransactionStatus from "./ShowTransactionStatus";
+import TokenObject from "../utils/TokenObject";
 
 interface BackendMintingFieldProps {
   inputToken: TokenObject;
@@ -25,11 +25,11 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
   isConnected,
   // minimumTransactionAmount,
 }) => {
-  const [inputFieldValue, setInputFieldValue] = useState<string>('');
+  const [inputFieldValue, setInputFieldValue] = useState<string>("");
   const [inputFieldNatValue, setInputFieldNatValue] = useState<bigint>(0n);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [textFieldErrored, setTextFieldErrored] = useState<boolean>(false);
-  const [statusArray, setStatusArray] = useState<string[]>(['']);
+  const [statusArray, setStatusArray] = useState<string[]>([""]);
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
@@ -43,14 +43,14 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
     const regex = new RegExp(`^\\d*\\.?\\d{0,${inputToken.decimals}}$`); ///^\d*\.?\d{0,8}$/; // Regex to allow numbers with up to 8 decimal places
     const newInputFieldValue = event.target.value;
 
-    if (regex.test(newInputFieldValue) || newInputFieldValue === '') {
+    if (regex.test(newInputFieldValue) || newInputFieldValue === "") {
       setInputFieldValue(newInputFieldValue);
     }
   };
 
   const handleMint = async () => {
     if (!isConnected) {
-      addStatus('You must be logged in to swap!');
+      addStatus("You must be logged in to swap!");
       return;
     }
 
@@ -63,7 +63,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
     }
 
     if (!inputToken.actor || !outputToken.actor) {
-      addStatus('Actors not loaded!');
+      addStatus("Actors not loaded!");
       return;
     }
 
@@ -86,12 +86,12 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
       addStatus(`${inputToken.ticker} was approved, but was not transferred.`);
     }
 
-    console.log('getting new ledger balances. (minting)');
+    console.log("getting new ledger balances. (minting)");
     inputToken.getLedgerBalance();
     outputToken.getLedgerBalance();
     setLoading(false);
     setInputFieldNatValue(0n);
-    setInputFieldValue('');
+    setInputFieldValue("");
   };
 
   const approveInputToken = async (amountInE8s: bigint) => {
@@ -151,7 +151,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
 
   useEffect(() => {
     const inputNatValue =
-      inputFieldValue && inputFieldValue !== '.'
+      inputFieldValue && inputFieldValue !== "."
         ? BigInt(
             (
               parseFloat(inputFieldValue) * Math.pow(10, inputToken.decimals)
@@ -175,7 +175,7 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <h6 style={{ marginTop: '10px', marginBottom: '10px', color: '#999' }}>
+      <h6 style={{ marginTop: "10px", marginBottom: "10px", color: "#999" }}>
         {`There is a one-way fee of ${bigintToFloatString(
           extraFee,
           inputToken.decimals
@@ -195,9 +195,9 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
       )}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'start',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "start",
         }}
       >
         <div>
@@ -214,28 +214,28 @@ const BackendMintingField: React.FC<BackendMintingFieldProps> = ({
                     minimumTransactionAmount,
                     inputToken.decimals
                   )} ${inputToken.ticker} to swap.`
-                : ''
+                : ""
             }
             error={textFieldErrored}
             disabled={loading}
             slotProps={{
               input: {
-                inputMode: 'decimal', // Helps show the numeric pad with decimal on mobile devices
+                inputMode: "decimal", // Helps show the numeric pad with decimal on mobile devices
               },
             }}
-            style={{ width: '200px', minHeight: '84px' }} // Set a fixed width or use a percentage
+            style={{ width: "200px", minHeight: "84px" }} // Set a fixed width or use a percentage
           />
         </div>
-        <div style={{ height: '100%', paddingLeft: '2px' }}>
+        <div style={{ height: "100%", paddingLeft: "2px" }}>
           <button
             onClick={handleMint}
             disabled={loading || buttonDisabled}
             style={{
-              height: '56px', // Match this with TextField's height
-              width: '200px', // Set the same width as TextField
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: "56px", // Match this with TextField's height
+              width: "200px", // Set the same width as TextField
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
             className="bobButton"
           >

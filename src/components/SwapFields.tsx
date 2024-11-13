@@ -1,7 +1,7 @@
-import TokenObject from '../TokenObject';
-import bigintToFloatString from '../bigIntToFloatString';
-import BackendMintingField from './BackendMintingField';
-import BackendWithdrawField from './BackendWithdrawField';
+import TokenObject from "../utils/TokenObject";
+import bigintToFloatString from "../utils/bigIntToFloatString";
+import BackendMintingField from "./BackendMintingField";
+import BackendWithdrawField from "./BackendWithdrawField";
 
 interface SwapFieldsProps {
   loading: boolean;
@@ -24,9 +24,9 @@ const SwapFields: React.FC<SwapFieldsProps> = ({
         <>
           <div
             style={{
-              border: '3px solid lightgrey',
-              padding: '10px',
-              width: '100%',
+              border: "3px solid lightgrey",
+              padding: "10px",
+              width: "100%",
             }}
           >
             <h2>{`Convert ${inputTokenObject.ticker}:`}</h2>
@@ -46,10 +46,10 @@ const SwapFields: React.FC<SwapFieldsProps> = ({
           </div>
           <div
             style={{
-              border: '3px solid lightgrey',
-              padding: '10px',
-              width: '100%',
-              marginTop: '16px',
+              border: "3px solid lightgrey",
+              padding: "10px",
+              width: "100%",
+              marginTop: "16px",
             }}
           >
             <h2>{`Convert ${outputTokenObject.ticker}:`}</h2>

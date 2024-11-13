@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { AuthClient } from '@dfinity/auth-client';
-import { HttpAgent } from '@dfinity/agent';
-import TokenObject from '../TokenObject';
+import { useEffect, useRef, useState } from "react";
+import { AuthClient } from "@dfinity/auth-client";
+import { HttpAgent } from "@dfinity/agent";
+import TokenObject from "../utils/TokenObject";
 
 interface InternetIdentityLoginHandlerProps {
   tokens: TokenObject[]; // Array of tokens
@@ -36,15 +36,15 @@ const InternetIdentityLoginHandler: React.FC<
 
   const setupIdentityProvider = (option: number) => {
     //0 for ic0.app; 1 for internetcomputer.org
-    if (process.env.DFX_NETWORK === 'local') {
+    if (process.env.DFX_NETWORK === "local") {
       setIdentityProvider(
-        new URL('http://br5f7-7uaaa-aaaaa-qaaca-cai.localhost:4943')
+        new URL("http://br5f7-7uaaa-aaaaa-qaaca-cai.localhost:4943")
       );
       return;
     } else if (option === 0) {
-      setIdentityProvider(new URL('https://identity.ic0.app/'));
+      setIdentityProvider(new URL("https://identity.ic0.app/"));
     } else if (option === 1) {
-      setIdentityProvider(new URL('https://identity.internetcomputer.org/'));
+      setIdentityProvider(new URL("https://identity.internetcomputer.org/"));
     }
   };
 
@@ -56,11 +56,11 @@ const InternetIdentityLoginHandler: React.FC<
         identityProvider,
         onSuccess: () => {
           setIsConnected(true); // Set authentication state to true
-          setConnectionType('ii');
+          setConnectionType("ii");
           resolve(); // Resolve the promise on success
         },
         onError: (error) => {
-          console.error('Login failed:', error);
+          console.error("Login failed:", error);
           reject(error); // Reject the promise on error
         },
       });
@@ -89,7 +89,7 @@ const InternetIdentityLoginHandler: React.FC<
       token.setLoggedInPrincipal(myPrincipal);
     }
     setIsConnected(true);
-    setConnectionType('ii');
+    setConnectionType("ii");
     await createAgent();
   };
 
@@ -108,7 +108,7 @@ const InternetIdentityLoginHandler: React.FC<
   }, []);
 
   const checkLoggedIn = async () => {
-    if (connectionType !== '') return;
+    if (connectionType !== "") return;
     if (!authClient) return;
 
     const authenticated = await authClient.isAuthenticated();
@@ -126,8 +126,8 @@ const InternetIdentityLoginHandler: React.FC<
     if (authClient) {
       await authClient.logout();
       setIsConnected(false);
-      setConnectionType('');
-      setLoggedInPrincipal('');
+      setConnectionType("");
+      setLoggedInPrincipal("");
       for (const token of tokens) {
         token.logout();
       }
@@ -137,28 +137,28 @@ const InternetIdentityLoginHandler: React.FC<
 
   const createAgent = async () => {
     if (!authClient) {
-      console.error('authClientRef was null in createAgent()');
+      console.error("authClientRef was null in createAgent()");
       return;
     }
     const identity = authClient.getIdentity();
 
     const agent = new HttpAgent({
       host:
-        process.env.DFX_NETWORK === 'local'
-          ? 'http://localhost:4943'
+        process.env.DFX_NETWORK === "local"
+          ? "http://localhost:4943"
           : String(identityProvider) ===
-            'https://identity.internetcomputer.org/'
-          ? 'https://internetcomputer.org'
-          : 'https://ic0.app/', // Will identityProvider work?
+            "https://identity.internetcomputer.org/"
+          ? "https://internetcomputer.org"
+          : "https://ic0.app/", // Will identityProvider work?
       identity: identity,
     });
 
-    if (process.env.DFX_NETWORK === 'local') {
+    if (process.env.DFX_NETWORK === "local") {
       await agent.fetchRootKey();
     }
 
     for (const token of tokens) {
-      token.setActor('ii', agent);
+      token.setActor("ii", agent);
     }
   };
 
@@ -199,7 +199,7 @@ const InternetIdentityLoginHandler: React.FC<
             </>
           )}
         </>
-      ) : connectionType === 'ii' ? (
+      ) : connectionType === "ii" ? (
         <>
           <p>
             Your Internet Identity Principal is <br />

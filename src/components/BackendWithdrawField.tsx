@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { TextField, ThemeProvider } from '@mui/material';
-import theme from '../theme';
-import bigintToFloatString from '../bigIntToFloatString';
+import { useEffect, useState } from "react";
+import { TextField, ThemeProvider } from "@mui/material";
+import theme from "../theme";
+import bigintToFloatString from "../utils/bigIntToFloatString";
 // import { _SERVICE as bobService } from '../declarations/nns-ledger'; // why is this icpService?
 // import { _SERVICE as reBobService } from '../declarations/service_hack/service';
-import ShowTransactionStatus from './ShowTransactionStatus';
-import TokenObject from '../TokenObject';
+import ShowTransactionStatus from "./ShowTransactionStatus";
+import TokenObject from "../utils/TokenObject";
 
 interface BackendWithdrawFieldProps {
   inputToken: TokenObject;
@@ -22,11 +22,11 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
   setLoading,
   isConnected,
 }) => {
-  const [outputFieldValue, setOutputFieldValue] = useState<string>('');
+  const [outputFieldValue, setOutputFieldValue] = useState<string>("");
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [textFieldErrored, setTextFieldErrored] = useState<boolean>(false);
   const [outputFieldNatValue, setOutputFieldNatValue] = useState<bigint>(0n);
-  const [statusArray, setStatusArray] = useState<string[]>(['']);
+  const [statusArray, setStatusArray] = useState<string[]>([""]);
   const [textFieldValueTooLow, setTextFieldValueTooLow] =
     useState<boolean>(true);
 
@@ -34,7 +34,7 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
 
   const handleWithdrawl = async () => {
     if (!isConnected) {
-      addStatus('You must be logged in to swap!');
+      addStatus("You must be logged in to swap!");
       return;
     }
 
@@ -72,12 +72,12 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
       addStatus(`${outputToken.ticker} was approved, but was not transferred.`);
     }
 
-    console.log('getting new ledger balances. (withdraw)');
+    console.log("getting new ledger balances. (withdraw)");
     inputToken.getLedgerBalance();
     outputToken.getLedgerBalance();
     setLoading(false);
     setOutputFieldNatValue(0n);
-    setOutputFieldValue('');
+    setOutputFieldValue("");
   };
 
   const approveOutputToken = async (amountInE8s: bigint) => {
@@ -147,14 +147,14 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
     const regex = new RegExp(`^\\d*\\.?\\d{0,${outputToken.decimals}}$`); ///^\d*\.?\d{0,6}$/; // Regex to allow numbers with up to 8 decimal places
     const newOutputFieldValue = event.target.value;
 
-    if (regex.test(newOutputFieldValue) || newOutputFieldValue === '') {
+    if (regex.test(newOutputFieldValue) || newOutputFieldValue === "") {
       setOutputFieldValue(newOutputFieldValue);
     }
   };
 
   useEffect(() => {
     const outputNatValue =
-      outputFieldValue && outputFieldValue !== '.'
+      outputFieldValue && outputFieldValue !== "."
         ? BigInt(
             (
               parseFloat(outputFieldValue) * Math.pow(10, outputToken.decimals)
@@ -193,10 +193,10 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
       )}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'start',
-          width: '100%',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "start",
+          width: "100%",
         }}
       >
         <div>
@@ -213,28 +213,28 @@ const BackendWithdrawField: React.FC<BackendWithdrawFieldProps> = ({
                     minimumTransactionAmount,
                     outputToken.decimals
                   )} ${outputToken.ticker} to swap.`
-                : ''
+                : ""
             }
             error={textFieldErrored}
             disabled={loading}
             slotProps={{
               input: {
-                inputMode: 'decimal', // Helps show the numeric pad with decimal on mobile devices
+                inputMode: "decimal", // Helps show the numeric pad with decimal on mobile devices
               },
             }}
-            style={{ width: '200px', minHeight: '84px' }} // Set a fixed width or use a percentage
+            style={{ width: "200px", minHeight: "84px" }} // Set a fixed width or use a percentage
           />
         </div>
-        <div style={{ height: '100%', paddingLeft: '2px' }}>
+        <div style={{ height: "100%", paddingLeft: "2px" }}>
           <button
             onClick={handleWithdrawl}
             disabled={loading || buttonDisabled}
             style={{
-              height: '56px', // Match this with TextField's height
-              width: '200px', // Set the same width as TextField
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              height: "56px", // Match this with TextField's height
+              width: "200px", // Set the same width as TextField
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
             className="bobButton"
           >

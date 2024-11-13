@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import TransactionBox from './TransactionBox';
-import TokenReceive from './TokenReceive';
-import TokenObject from '../TokenObject';
+import React, { useEffect, useState } from "react";
+import TransactionBox from "./TransactionBox";
+import TokenReceive from "./TokenReceive";
+import TokenObject from "../utils/TokenObject";
 
 interface TokenManagementProps {
   loading: boolean;
@@ -54,23 +54,23 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
 
   if (isConnected) {
     return (
-      <div style={{ maxWidth: '600px' }} className="transactionBox">
+      <div style={{ maxWidth: "600px" }} className="transactionBox">
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '2px solid #ddd' }}>
+        <div style={{ display: "flex", borderBottom: "2px solid #ddd" }}>
           {tokens.map((token, index) => (
             <button
               className="bobButton"
               key={index}
               onClick={() => setActiveTab(index)}
               style={{
-                padding: '10px',
-                cursor: 'pointer',
-                border: activeTab === index ? '2px solid #646cff' : 'none',
-                color: activeTab === index ? '' : '',
+                padding: "10px",
+                cursor: "pointer",
+                border: activeTab === index ? "2px solid #646cff" : "none",
+                color: activeTab === index ? "" : "",
                 borderBottom:
-                  activeTab === index ? '2px solid #646cff' : 'none',
-                outline: 'none',
-                width: '50%',
+                  activeTab === index ? "2px solid #646cff" : "none",
+                outline: "none",
+                width: "50%",
               }}
             >
               {index === 0 ? `$${token.ticker}` : `$${token.ticker}`} {/*lol?*/}
@@ -79,7 +79,7 @@ const TokenManagement: React.FC<TokenManagementProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div style={{ padding: '20px' }}>{renderContent()}</div>
+        <div style={{ padding: "20px" }}>{renderContent()}</div>
       </div>
     );
   }

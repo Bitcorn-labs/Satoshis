@@ -1,11 +1,11 @@
-import { HttpAgent, Actor } from '@dfinity/agent';
-import { Principal } from '@dfinity/principal';
+import { HttpAgent, Actor } from "@dfinity/agent";
+import { Principal } from "@dfinity/principal";
 // import { idlFactory as icpFactory } from './declarations/nns-ledger';
-import { idlFactory as backendFactory } from './declarations/backend';
+import { idlFactory as backendFactory } from "../declarations/backend";
 // import { _SERVICE as bobService } from './declarations/nns-ledger';
-import { _SERVICE as reBobService } from './declarations/service_hack/service';
+import { _SERVICE as reBobService } from "../declarations/service_hack/service";
 // import { _SERVICE as reBobService } from './declarations/backend/';
-import { Token } from './declarations/internet_identity/internet_identity.did';
+import { Token } from "../declarations/internet_identity/internet_identity.did";
 
 interface TokenObjectParams {
   actor: reBobService | null;
@@ -67,15 +67,15 @@ class TokenObject {
 
       console.log({ result });
       // Handle the result
-      if ('Ok' in result) {
+      if ("Ok" in result) {
         console.log(`Transfer successful! Transaction ID: ${result.Ok}`);
         return true; // result.Ok;
-      } else if ('Err' in result) {
-        console.error('Transfer failed:', result.Err);
+      } else if ("Err" in result) {
+        console.error("Transfer failed:", result.Err);
         return false; // result.Err;
       }
     } catch (error) {
-      console.error('Error during token transfer:', error);
+      console.error("Error during token transfer:", error);
       throw error;
     } finally {
       this.getLedgerBalance(); // I'm not sure if this is the best way to do this.
@@ -105,7 +105,7 @@ class TokenObject {
 
       console.log(approvalResult);
 
-      if ('Ok' in approvalResult) {
+      if ("Ok" in approvalResult) {
         return true;
       } else {
         console.error(
@@ -125,7 +125,7 @@ class TokenObject {
     try {
       const result = await this.actor.deposit([], amountInE8s);
 
-      if ('ok' in result) {
+      if ("ok" in result) {
         return true;
       } else {
         console.error(
@@ -148,7 +148,7 @@ class TokenObject {
     try {
       const result = await this.actor.withdraw([], amountInE8s);
 
-      if ('ok' in result) {
+      if ("ok" in result) {
         return true;
       } else {
         console.log({ result });
@@ -167,9 +167,9 @@ class TokenObject {
 
     try {
       console.log(
-        'attempting to fecth a balance from ',
+        "attempting to fecth a balance from ",
         this.canisterId,
-        ' of ',
+        " of ",
         this.loggedInPrincipal
       );
       const response = await this.actor.icrc1_balance_of({
@@ -177,7 +177,7 @@ class TokenObject {
         subaccount: [],
       });
 
-      console.log('Fetching balances...', { response });
+      console.log("Fetching balances...", { response });
       this.ledgerBalance = response;
 
       this.refresh();
@@ -193,73 +193,34 @@ class TokenObject {
     }
   }
 
-  async setGameCompleted(): Promise<void> {
-    if (this.actor === null) return;
-    try {
-      console.log('checking game completion');
-      const isCompleted = await this.checkGameCompleted();
-      console.log('game completed?', isCompleted);
-      if (!isCompleted) {
-        console.log('setting game completed');
-        this.actor.setGameCompleted();
-      }
-    } catch (error) {
-      console.log(
-        "an error occurred while trying to let the backend know you've completed the game.",
-        error
-      );
-    }
-  }
-
-  async checkGameCompleted(): Promise<boolean> {
-    if (this.actor === null) return false;
-    try {
-      const isCompleted = await this.actor.didPrincipalWin(
-        Principal.fromText(this.loggedInPrincipal)
-      );
-      // console.log(
-      //   'Checked if the game was completed, backend says:',
-      //   isCompleted
-      // );
-      return isCompleted;
-    } catch (error) {
-      console.log(
-        "an error occurred while trying to ask the backend if you've completed the game.",
-        error
-      );
-    }
-
-    return false;
-  }
-
   printDetails(): void {
-    console.log('actor', this.actor);
-    console.log('fee', this.fee);
-    console.log('ticker', this.ticker);
-    console.log('decimals', this.decimals);
-    console.log('ledgerBalance', this.ledgerBalance);
-    console.log('canisterId', this.canisterId);
-    console.log('loggedInPrincipal', this.loggedInPrincipal);
+    console.log("actor", this.actor);
+    console.log("fee", this.fee);
+    console.log("ticker", this.ticker);
+    console.log("decimals", this.decimals);
+    console.log("ledgerBalance", this.ledgerBalance);
+    console.log("canisterId", this.canisterId);
+    console.log("loggedInPrincipal", this.loggedInPrincipal);
   }
 
   async logout(): Promise<void> {
     this.actor = null;
     this.ledgerBalance = 0n;
-    this.loggedInPrincipal = '';
+    this.loggedInPrincipal = "";
     this.refresh();
   }
 
   // Method to set up the actor
   async setActor(
-    method: 'plug' | 'ii',
+    method: "plug" | "ii",
     agent: HttpAgent | null
   ): Promise<void> {
-    if (method === 'plug') {
+    if (method === "plug") {
       this.actor = await window.ic.plug.createActor({
         canisterId: this.canisterId,
         interfaceFactory: backendFactory, // This should work for the primary token as well as the backend hopefully.
       });
-    } else if (method === 'ii' && agent) {
+    } else if (method === "ii" && agent) {
       this.actor = await Actor.createActor(backendFactory, {
         // This should work for the primary token as well as the backend hopefully.
         agent,

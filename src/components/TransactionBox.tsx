@@ -1,9 +1,9 @@
-import { Principal } from '@dfinity/principal';
-import { TextField, ThemeProvider } from '@mui/material';
-import { useEffect, useState } from 'react';
-import bigintToFloatString from '../bigIntToFloatString';
-import theme from '../theme';
-import TokenObject from '../TokenObject';
+import { Principal } from "@dfinity/principal";
+import { TextField, ThemeProvider } from "@mui/material";
+import { useEffect, useState } from "react";
+import bigintToFloatString from "../utils/bigIntToFloatString";
+import theme from "../theme";
+import TokenObject from "../utils/TokenObject";
 
 interface TransactionBoxProps {
   loading: boolean;
@@ -27,7 +27,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
   token,
 }) => {
   const [transactionFieldValue, setTransactionFieldValue] =
-    useState<string>('');
+    useState<string>("");
   const [transactionFieldNatValue, setTransactionFieldNatValue] =
     useState<bigint>(0n);
 
@@ -36,11 +36,11 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     useState<boolean>(false);
   const [valueFieldErrored, setValueFieldErrored] = useState<boolean>(false);
 
-  const [principalField, setPrincipalField] = useState<string>('');
+  const [principalField, setPrincipalField] = useState<string>("");
   const [principalFieldErrored, setPrincipalFieldErrored] =
     useState<boolean>(false);
 
-  const [remainder, setRemainder] = useState<string>('');
+  const [remainder, setRemainder] = useState<string>("");
 
   const transfer = async (amountInE8s: bigint, toPrincipal: string) => {
     if (!token.actor) return;
@@ -82,10 +82,10 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     // }
     try {
       token.transfer(amountInE8s, toPrincipal);
-      setTransactionFieldValue('');
-      setPrincipalField('');
+      setTransactionFieldValue("");
+      setPrincipalField("");
     } catch (error) {
-      console.error('An error occurred while trying to transfer tokens', error);
+      console.error("An error occurred while trying to transfer tokens", error);
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     const regex = new RegExp(`^\\d*\\.?\\d{0,${token.decimals}}$`);
     const newBobFieldValue = event.target.value;
 
-    if (regex.test(newBobFieldValue) || newBobFieldValue === '') {
+    if (regex.test(newBobFieldValue) || newBobFieldValue === "") {
       setTransactionFieldValue(newBobFieldValue);
     }
   };
@@ -105,7 +105,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
   useEffect(() => {
     const decimalMultiplier = 10 ** token.decimals;
     const natValue =
-      transactionFieldValue && transactionFieldValue !== '.'
+      transactionFieldValue && transactionFieldValue !== "."
         ? BigInt(
             (parseFloat(transactionFieldValue) * decimalMultiplier).toFixed(0)
           ) // Convert to Nat
@@ -129,7 +129,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
         )
       );
     } else {
-      setRemainder('0');
+      setRemainder("0");
     }
   }, [transactionFieldValue, token]);
 
@@ -142,7 +142,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setPrincipalField(event.target.value);
-    if (event.target.value === '') {
+    if (event.target.value === "") {
       setPrincipalFieldErrored(false);
     } else {
       setPrincipalFieldErrored(!isValidPrincipal(event.target.value));
@@ -162,7 +162,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     setTransactionFieldValue(
       token.ledgerBalance > token.fee
         ? bigintToFloatString(token.ledgerBalance - token.fee, token.decimals)
-        : '0'
+        : "0"
     );
   };
 
@@ -170,18 +170,18 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
     <ThemeProvider theme={theme}>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'start',
-          width: '100%',
-          flexDirection: 'column',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "start",
+          width: "100%",
+          flexDirection: "column",
         }}
       >
         <div>
           <div>
             <div>{`Remaining: ${remainder} ${token.ticker}s`}</div>
           </div>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: "flex" }}>
             <TextField
               label="To Principal"
               variant="filled"
@@ -189,7 +189,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
               value={principalField}
               error={principalFieldErrored}
               helperText={
-                principalFieldErrored ? 'Enter a valid principal!' : ''
+                principalFieldErrored ? "Enter a valid principal!" : ""
               }
               disabled={loading}
             />
@@ -207,21 +207,21 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
                       token.fee,
                       token.decimals
                     )} to transfer.`
-                  : ''
+                  : ""
               }
               error={valueFieldErrored}
               disabled={loading}
               slotProps={{
                 input: {
-                  inputMode: 'decimal', // Helps show the numeric pad with decimal on mobile devices
+                  inputMode: "decimal", // Helps show the numeric pad with decimal on mobile devices
                 },
               }}
-              style={{ width: '200px', minHeight: '84px' }} // Set a fixed width or use a percentage
+              style={{ width: "200px", minHeight: "84px" }} // Set a fixed width or use a percentage
             />
             <div>
               <button
                 className="bobButton"
-                style={{ height: '56px' }}
+                style={{ height: "56px" }}
                 onClick={handleMaxClick}
               >
                 MAX
@@ -232,7 +232,7 @@ const TransactionBox: React.FC<TransactionBoxProps> = ({
                 className="bobButton"
                 disabled={buttonDisabled || principalFieldErrored || loading}
                 onClick={handleTransaction}
-                style={{ height: '56px' }}
+                style={{ height: "56px" }}
               >
                 SEND
               </button>

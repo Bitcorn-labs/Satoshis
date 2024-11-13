@@ -1,5 +1,5 @@
-import TokenObject from '../TokenObject';
-import TokenManagement from './TokenManagement';
+import TokenObject from "../utils/TokenObject";
+import TokenManagement from "./TokenManagement";
 
 interface FooterProps {
   loading: boolean;

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import bigintToFloatString from '../bigIntToFloatString';
-import { _SERVICE as bobService } from '../declarations/nns-ledger/index.d';
-import { _SERVICE as reBobService } from '../declarations/service_hack/service';
-import TokenObject from '../TokenObject';
+import React, { useState } from "react";
+import bigintToFloatString from "../utils/bigIntToFloatString";
+import { _SERVICE as bobService } from "../declarations/nns-ledger/index.d";
+import { _SERVICE as reBobService } from "../declarations/service_hack/service";
+import TokenObject from "../utils/TokenObject";
 
 // interface Token {
 //   tokenActor: bobService | reBobService | null;
@@ -21,11 +21,11 @@ const TokenReceive: React.FC<{
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(loggedInPrincipal);
-      setCopySuccess('Copied to clipboard!');
+      setCopySuccess("Copied to clipboard!");
       setTimeout(() => setCopySuccess(null), 2000); // Reset notification after 2 seconds
     } catch (err) {
-      console.error('Failed to copy!', err);
-      setCopySuccess('Failed to copy');
+      console.error("Failed to copy!", err);
+      setCopySuccess("Failed to copy");
       setTimeout(() => setCopySuccess(null), 2000); // Reset after 2 seconds
     }
   };
@@ -43,8 +43,8 @@ const TokenReceive: React.FC<{
       <div
         onClick={copyToClipboard}
         style={{
-          cursor: 'pointer',
-          textDecoration: 'underline',
+          cursor: "pointer",
+          textDecoration: "underline",
         }}
         title="Click to copy"
       >
@@ -55,8 +55,8 @@ const TokenReceive: React.FC<{
       </div>
 
       {/* Notification area with fixed height */}
-      <div style={{ height: '24px', marginTop: '10px' }}>
-        {copySuccess && <span style={{ color: 'green' }}>{copySuccess}</span>}
+      <div style={{ height: "24px", marginTop: "10px" }}>
+        {copySuccess && <span style={{ color: "green" }}>{copySuccess}</span>}
       </div>
     </div>
   );

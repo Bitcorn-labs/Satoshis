@@ -21,7 +21,6 @@
 
 body,
 #root {
-  cursor: url('cursor.png'), auto;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -29,21 +28,11 @@ body,
   background-color: #2e003e; /* Dark purple background */
   background-image: linear-gradient(135deg, #2e003e, #4a0073);
   color: #ffffff;
-  font-family: 'Press Start 2P', cursive;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   overflow-x: hidden;
 }
-
-// body {
-//   background-color: #2e003e; /* Dark purple background */
-//   font-family: 'Press Start 2P', cursive; /* Retro game font */
-//   color: #fff;
-//   margin: 0;
-//   padding: 0;
-//   box-sizing: border-box; /* Ensure padding and borders are included in element's total width and height */
-// }
 
 a {
   font-weight: 500;

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import TokenObject from '../TokenObject';
+import { useEffect } from "react";
+import TokenObject from "../utils/TokenObject";
 
 interface PlugLoginHandlerProps {
   tokens: TokenObject[];
@@ -25,7 +25,7 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
   setLoggedInPrincipal,
 }) => {
   const checkConnection = async () => {
-    if (connectionType !== '') return false; // I think this needs to be reworked.
+    if (connectionType !== "") return false; // I think this needs to be reworked.
     try {
       const connection = !!(await window.ic.plug.isConnected());
 
@@ -34,10 +34,10 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
       setIsConnected(connection);
 
       if (connection) {
-        setConnectionType('plug');
+        setConnectionType("plug");
         return true;
       } else {
-        setConnectionType('');
+        setConnectionType("");
         return false;
       }
     } catch {
@@ -46,10 +46,10 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
   };
 
   useEffect(() => {
-    if (!isConnected || connectionType !== 'plug') return;
+    if (!isConnected || connectionType !== "plug") return;
     fetchPrincipal();
     setUpActors();
-    console.log('isConnected', isConnected, connectionType);
+    console.log("isConnected", isConnected, connectionType);
   }, [isConnected]);
 
   const fetchPrincipal = async () => {
@@ -63,23 +63,23 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
 
   const setUpActors = async () => {
     for (const token of tokens) {
-      token.setActor('plug', null);
+      token.setActor("plug", null);
     }
   };
 
   const handleLogout = async () => {
     setLoading(true);
 
-    if (isConnected && connectionType === 'plug') {
+    if (isConnected && connectionType === "plug") {
       try {
         await window.ic.plug.disconnect();
         setIsConnected(false);
-        setConnectionType('');
+        setConnectionType("");
         for (const token of tokens) {
           token.logout();
         }
       } catch (error) {
-        console.error('Logout failed:', error);
+        console.error("Logout failed:", error);
       }
     }
     setLoading(false);
@@ -95,31 +95,31 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
           // whitelist: [bobCanisterID, reBobCanisterID],
           whitelist: tokens.map((token) => token.canisterId),
           host:
-            process.env.DFX_NETWORK === 'local'
-              ? 'http://127.0.0.1:4943'
-              : 'https://ic0.app',
+            process.env.DFX_NETWORK === "local"
+              ? "http://127.0.0.1:4943"
+              : "https://ic0.app",
           onConnectionUpdate: async () => {
-            console.log('Plug connection updated');
+            console.log("Plug connection updated");
             checkConnection();
           },
         });
-        if (process.env.DFX_NETWORK === 'local') {
+        if (process.env.DFX_NETWORK === "local") {
           await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
         }
-        console.log('Connected with pubkey:', pubkey);
+        console.log("Connected with pubkey:", pubkey);
         setIsConnected(true);
-        setConnectionType('plug');
+        setConnectionType("plug");
       } else {
-        if (process.env.DFX_NETWORK === 'local') {
+        if (process.env.DFX_NETWORK === "local") {
           await window.ic.plug.sessionManager.sessionData.agent.agent.fetchRootKey();
         }
         setIsConnected(true);
-        setConnectionType('plug');
+        setConnectionType("plug");
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       setIsConnected(false);
-      setConnectionType('');
+      setConnectionType("");
     } finally {
       setLoading(false);
     }
@@ -143,7 +143,7 @@ const PlugLoginHandler: React.FC<PlugLoginHandlerProps> = ({
             </button>
           </div>
         </>
-      ) : connectionType === 'plug' ? (
+      ) : connectionType === "plug" ? (
         <>
           <p>
             Your plug principal is

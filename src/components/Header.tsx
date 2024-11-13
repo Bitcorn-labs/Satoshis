@@ -1,7 +1,7 @@
-import { RefObject } from 'react';
-import TokenObject from '../TokenObject';
-import InternetIdentityLoginHandler from './InternetIdentityLoginHandler';
-import PlugLoginHandler from './PlugLoginHandler';
+import { RefObject } from "react";
+import TokenObject from "../utils/TokenObject";
+import InternetIdentityLoginHandler from "./InternetIdentityLoginHandler";
+import PlugLoginHandler from "./PlugLoginHandler";
 
 interface HeaderProps {
   inputTokenObject: TokenObject;
@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   loginSection,
 }) => {
   return (
-    <div style={{ marginBottom: '16px', width: '100%' }}>
+    <div style={{ marginBottom: "16px", width: "100%" }}>
       <header>
         <h1>DRAGGIN KARMA POINTS</h1>
         <h1>Paladin Wizard Society</h1>
@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
       <div ref={loginSection} className="banner">
         Dragon Paladin Wizards
       </div>
-      <h2>{gameCompleted ? 'Greetings Champion' : <></>}</h2>
+      <h2>{gameCompleted ? "Greetings Champion" : <></>}</h2>
       <PlugLoginHandler
         tokens={[inputTokenObject, outputTokenObject]}
         loading={loading}
