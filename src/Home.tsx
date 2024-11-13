@@ -10,9 +10,9 @@ const Home: React.FC<HomeProps> = ({ totalInputTokenHeld }) => {
   return (
     <div>
       <div className="egg-section">
-        <h2>use karma points</h2>
+        <h2>Split Your BTC into 100,000,000 satoshis and back</h2>
         <p>
-          Travlers have sent{' '}
+          users have sent{' '}
           <span id="eggsSent">
             {totalInputTokenHeld !== '' ? (
               totalInputTokenHeld
@@ -22,19 +22,12 @@ const Home: React.FC<HomeProps> = ({ totalInputTokenHeld }) => {
               </>
             )}
           </span>{' '}
-          dragon karma to this world.
+          Bitcoin to this Canister
         </p>
         <Link to="/keep">
-          <button>Enter the Keep</button>
+          <button>create Satoshis</button>
         </Link>
 
-        <Link to="/lair">
-          <button>Enter the Lair</button>
-        </Link>
-
-        <Link to="/game">
-          <button>Enter the Luminescent Grove</button>
-        </Link>
       </div>
       <GroupPhoto />
     </div>
